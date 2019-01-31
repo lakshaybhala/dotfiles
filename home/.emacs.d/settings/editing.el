@@ -11,6 +11,11 @@
 (setq TeX-save-query nil)
 ; (setq TeX-PDF-mode t)
 
+;; Remove trailing whitespace from lines
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+;; Add a newline at the end of files
+(setq require-final-newline t)
+
 (provide 'editing)
 
 ;;; editing.el ends here
