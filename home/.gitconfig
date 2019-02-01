@@ -4,7 +4,7 @@
     signingkey = 8C35DC1498F19C37FF928A8CF5F23D4DB7270DF8
 [core]
     editor = emacsclient
-    excludesfile = /Users/LB/.config/git/ignore
+    excludesfile = ~/.config/git/ignore
 [alias]
     st = status
     co = checkout
