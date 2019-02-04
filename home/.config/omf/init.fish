@@ -17,16 +17,16 @@ $HOME/.cargo/bin \
 $PATH
 
 # Aliases
-# For use instead of `emacs` to open in existing emacs GUI session
+# For use instead of `emacs` to open in existing Emacs GUI session
 alias emc "emacsclient -n"
 # Easier way of running `emacs -nw`
 alias enw "emacs -nw"
 # Remind myself to use the Rust versions of things!
 alias ls "echo 'use exa'"
-# alias cat "echo 'use bat'"
+alias cat "echo 'use bat'"
 # Alias to make typing exa arguments easier
 alias exl "exa -al --color=always"
-# Quick view of all projects in ~/Projects/src/
+# Quick view of all projects in ~/Projects/github.com/
 alias projects "tree -C -L 2 ~/Projects/github.com/ | less"
 
 # Misc config
