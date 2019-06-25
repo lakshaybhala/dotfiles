@@ -7,11 +7,10 @@
 (add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 
 ;; List of packages to be installed
-(defvar package-list '(auctex color-theme-sanityinc-tomorrow
-  dumb-jump fish-mode latex-pretty-symbols markdown-mode
-  multiple-cursors rust-mode sass-mode scss-mode swift-mode
-  toml-mode yaml-mode)
-  "A list of packages to install at startup.")
+(defvar package-list '(auctex color-theme-sanityinc-tomorrow company-sourcekit dumb-jump ebib
+    fish-mode github-modern-theme latex-pretty-symbols latex-preview-pane markdown-mode
+    multiple-cursors pdf-tools rust-mode sass-mode scss-mode swift-mode toml-mode yaml-mode)
+    "A list of packages to install at startup.")
 
 ;; Initialise packages
 (package-initialize)

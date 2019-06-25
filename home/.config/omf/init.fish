@@ -2,8 +2,11 @@
 source "$HOME/.homesick/repos/homeshick/homeshick.fish"
 # Load fish completions for homeshick
 source "$HOME/.homesick/repos/homeshick/completions/homeshick.fish"
-# Check for updates to dotfiles
-homeshick --quiet refresh
+
+if status --is-interactive
+    # Check for updates to dotfiles
+    homeshick --quiet refresh
+end
 
 # Rust
 # Path to Rust source
@@ -16,18 +19,24 @@ $HOME/.cargo/bin \
 # Existing $PATH
 $PATH
 
-# Aliases
-# For use instead of `emacs` to open in existing Emacs GUI session
-alias emc "emacsclient -n"
-# Easier way of running `emacs -nw`
-alias enw "emacs -nw"
-# Remind myself to use the Rust versions of things!
-alias ls "echo 'use exa'"
-alias cat "echo 'use bat'"
-# Alias to make typing exa arguments easier
-alias exl "exa -al --color=always"
-# Quick view of all projects in ~/Projects/github.com/
-alias projects "tree -C -L 2 ~/Projects/github.com/ | less"
+# Abbreviations
+if status --is-interactive
+    # Use exa instead of ls
+    abbr -a -g ls exa --color=always
+    abbr -a -g lsl exa -al --color=always
+    # Use bat instead of cat
+    abbr -a -g cat bat
+    # Use sd instead of sed
+    abbr -a -g sed sd
+    # Use dust instead of du
+    abbr -a -g du dust
+    # Use fd instead of find
+    abbr -a -g find fd
+    # Use ripgrep instead of grep
+    abbr -a -g grep rg
+    # For use instead of `emacs` to open in existing emacs GUI session
+    abbr -a -g emc emacsclient -n
+end
 
 # Misc config
 # Make `less` clear its output on closing

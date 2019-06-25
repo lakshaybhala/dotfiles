@@ -4,7 +4,7 @@
 (defun light-mode ()
   "Change the theme to a light theme."
   (interactive)
-  (load-theme 'sanityinc-tomorrow-day))
+  (load-theme 'github-modern))
 
 (defun dark-mode ()
   "Change the theme to a dark theme."

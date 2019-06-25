@@ -33,18 +33,13 @@
 (global-set-key (kbd "C-,") #'prev-window)
 (global-set-key (kbd "C-c ,") #'prev-window)
 
-;; Dumb jump
-;; Apparently C-M-g doesn't work, so bind this instead
-(global-set-key (kbd "C-c g") 'dumb-jump-go)
-
 ;; multiple-cursors
 (require 'multiple-cursors)
 ;; Use C-S-c C-S-c to trigger multiple-cursors on the region
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-;; Multiple cursors by searching
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+
+;; trigger ebib with C-c e
+(global-set-key "\C-ce" 'ebib)
 
 (provide 'binds)
 
