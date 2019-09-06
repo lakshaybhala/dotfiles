@@ -3,7 +3,7 @@
     email = lakshaybhala@gmail.com
     signingkey = 8C35DC1498F19C37FF928A8CF5F23D4DB7270DF8
 [core]
-    editor = emacsclient
+    editor = nvim
     excludesfile = ~/.config/git/ignore
 [alias]
     st = status
@@ -27,4 +27,6 @@
 [commit]
     gpgsign = true
 [gpg]
-    program = gpg
+    program = gpg2
+[pager]
+    branch = false

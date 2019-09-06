@@ -19,6 +19,10 @@ $HOME/.cargo/bin \
 # Existing $PATH
 $PATH
 
+# Aliases
+# Copy from within tmux/byobu
+# alias tcopy "tmux save-buffer - | pbcopy"
+
 # Abbreviations
 if status --is-interactive
     # Use exa instead of ls
@@ -41,8 +45,8 @@ end
 # Misc config
 # Make `less` clear its output on closing
 set -xg LESS R
-# Set the default editor to `emacs`
-set -xg EDITOR "emacsclient"
+# Set the default editor to `nvim`
+set -xg EDITOR "nvim"
 # Set language
 set -xg LC_ALL en_GB.UTF-8
 set -xg LANG en_GB.UTF-8
