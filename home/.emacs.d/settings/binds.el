@@ -13,7 +13,7 @@
   (interactive "p")
   (if (use-region-p)
       (progn (indent-rigidly (region-beginning) (region-end) (* N -4))
-	     (setq deactivate-mark nil))
+             (setq deactivate-mark nil))
     (self-insert-command N)))
 
 ;; Indent with C-x ]
@@ -37,6 +37,9 @@
 (require 'multiple-cursors)
 ;; Use C-S-c C-S-c to trigger multiple-cursors on the region
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
 ;; trigger ebib with C-c e
 (global-set-key "\C-ce" 'ebib)

@@ -24,9 +24,5 @@
     mg = merge
     mgs = merge -sS
     mgvs = merge --verify-signatures -sS
-[commit]
-    gpgsign = true
-[gpg]
-    program = gpg2
 [pager]
     branch = false

@@ -8,7 +8,7 @@ let mapleader = "\<Space>"
 if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
   silent !curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+  au VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 " Start installing plugins
@@ -16,8 +16,9 @@ call plug#begin('~/.local/share/nvim/plugged')
 
 " Vim enhancements
 Plug 'ciaranm/securemodelines'
+
+" GUI
 Plug 'itchyny/lightline.vim'
-Plug 'dense-analysis/ale'
 Plug 'machakann/vim-highlightedyank'
 Plug 'jeffkreeftmeijer/vim-numbertoggle'
 
@@ -29,15 +30,20 @@ Plug 'junegunn/fzf.vim'
 " Semantic language support
 Plug 'ncm2/ncm2'
 Plug 'roxma/nvim-yarp'
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
+Plug 'dense-analysis/ale'
 
 " Completion plugins
 Plug 'ncm2/ncm2-bufword'
 Plug 'ncm2/ncm2-tmux'
 Plug 'ncm2/ncm2-path'
-Plug 'ncm2/ncm2-racer'
 
 " Syntactic language support
 Plug 'cespare/vim-toml'
+Plug 'lervag/vim-latex'
 Plug 'rust-lang/rust.vim'
 Plug 'keith/swift.vim'
 Plug 'dag/vim-fish'
@@ -47,56 +53,64 @@ Plug 'uarun/vim-protobuf'
 Plug 'vmchale/ion-vim'
 Plug 'lervag/vimtex'
 Plug 'elmcast/elm-vim'
+Plug 'pangloss/vim-javascript'
+Plug 'maxmellon/vim-jsx-pretty'
+Plug 'jparise/vim-graphql'
+Plug 'derekwyatt/vim-scala'
 
 call plug#end()
 
 " PLUGIN SETTINGS
 
-" LanguageClient-neovim
-set hidden
-
 " ncm2
-" Python 3
-let g:python3_host_prog='/usr/local/bin/python3'
+let g:python3_host_prog = '/usr/local/bin/python3'
+set completeopt=noinsert,menuone,noselect
 
-" Lightline
-let g:lightline = { 'colorscheme': 'wombat' }
-let g:lightline = {
-      \ 'component_function': {
-      \   'filename': 'LightlineFilename',
-      \ },
-\ }
-function! LightlineFilename()
-  return expand('%:t') !=# '' ? @% : '[No Name]'
-endfunction
+" tab to select
+" and don't hijack my enter key
+inoremap <expr><Tab> (pumvisible()?(empty(v:completed_item)?"\<C-n>":"\<C-y>"):"\<Tab>")
+inoremap <expr><CR> (pumvisible()?(empty(v:completed_item)?"\<CR>\<CR>":"\<C-y>"):"\<CR>")
 
-" from http://sheerun.net/2014/03/21/how-to-boost-your-vim-productivity/
-if executable('ag')
-    set grepprg=ag\ --nogroup\ --nocolor
-endif
-if executable('rg')
-    set grepprg=rg\ --no-heading\ --vimgrep
-    set grepformat=%f:%l:%c:%m
-endif
+augroup ncm2
+    au!
 
-" Linter
+    au BufEnter * call ncm2#enable_for_buffer()
+augroup END
+
+" LanguageClient-neovim
+let g:LanguageClient_serverCommands = {
+    \ 'rust': ['~/.cargo/bin/rustup', 'run', 'nightly', 'rls']
+    \ }
+
+" ALE
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_insert_leave = 1
 let g:ale_lint_on_save = 1
 let g:ale_lint_on_enter = 0
-let g:ale_virtualtext_cursor = 1
 let g:ale_linters = {
     \ 'rust': ['rls'],
+    \ 'go': ['gopls'],
     \ 'c': ['clangd'],
 \ }
-let g:ale_rust_rls_config = {
-  \ 'rust': {
-  \   'all_targets': 1,
-    \   'all_features': 1,
-  \   'build_on_save': 1,
-  \   'clippy_preference': 'on'
-  \ }
+
+let g:ale_fix_on_save = 1
+let g:ale_fixers = {
+    \ 'javascript': ['eslint', 'prettier'],
+    \ 'rust': ['rustfmt'],
 \ }
+
+let g:ale_rust_rls_toolchain = 'nightly'
+let g:ale_rust_rls_config = {
+    \ 'rust': {
+        \   'all_targets': 1,
+        \   'all_features': 1,
+        \   'build_on_save': 1,
+        \   'clippy_preference': 'on'
+    \ }
+\ }
+
+let g:ale_virtualtext_cursor = 1
+
 highlight link ALEWarningSign Todo
 highlight link ALEErrorSign WarningMsg
 highlight link ALEVirtualTextWarning Todo
@@ -111,39 +125,75 @@ let g:ale_sign_hint = "➤"
 
 nnoremap <silent> K :ALEHover<CR>
 nnoremap <silent> gd :ALEGoToDefinition<CR>
-"nnoremap <silent> <F2> :call LanguageClient_textDocument_rename()<CR>
+nnoremap <silent> <leader>r :ALERename<CR>
+
+" Lightline
+let g:lightline = { 'colorscheme': 'wombat' }
+let g:lightline = {
+      \ 'component_function': {
+      \   'filename': 'LightlineFilename',
+      \ },
+\ }
+function! LightlineFilename()
+  return expand('%:t') !=# '' ? @% : '[No Name]'
+endfunction
+
+" LANGUAGE SETTINGS
+
+" Rust
+augroup rust
+    au!
+
+    au Filetype rust set makeprg=cargo\ build
+augroup END
+" rust.vim
+let g:rustfmt_command = '~/.cargo/bin/rustup run nightly rustfmt'
+let g:rustfmt_autosave = 1
 
 " LaTeX
 let g:latex_indent_enabled = 1
 let g:latex_fold_envs = 0
 let g:latex_fold_sections = []
-autocmd BufNewFile,BufRead *.cls set syntax=tex
 
-" Completion
-autocmd BufEnter * call ncm2#enable_for_buffer()
-set completeopt=noinsert,menuone,noselect
-" tab to select
-" and don't hijack my enter key
-inoremap <expr><Tab> (pumvisible()?(empty(v:completed_item)?"\<C-n>":"\<C-y>"):"\<Tab>")
-inoremap <expr><CR> (pumvisible()?(empty(v:completed_item)?"\<CR>\<CR>":"\<C-y>"):"\<CR>")
-
-" ncm2-racer
-let $RUST_SRC_PATH = systemlist("rustc --print sysroot")[0] . "/lib/rustlib/src/rust/src"
-
-" vim-markdown
-let g:vim_markdown_folding_disabled=1
-
-" vimtex
 let g:vimtex_imaps_leader = ';'
 let g:tex_flavor = 'latex'
 
-" rust.vim
-let g:rustfmt_command = 'rustup run nightly rustfmt'
-let g:rustfmt_autosave = 1
+augroup latex
+    au!
 
-" =============================================================================
-" # Editor settings
-" =============================================================================
+    " Set filetype correctly for .cls files
+    au BufNewFile,BufRead *.cls set syntax=tex
+
+    au Filetype tex setlocal shiftwidth=2
+    au Filetype tex setlocal softtabstop=2
+    au Filetype tex setlocal tabstop=2
+
+    au Filetype tex setlocal fo-=c
+    au Filetype tex setlocal fo+=tc
+
+    au Filetype tex set makeprg=ninja
+augroup END
+
+" Markdown
+let g:vim_markdown_folding_disabled = 1
+
+" Ruby
+augroup ruby
+    au!
+
+    " Set filetype correctly for Podfiles
+    au BufNewFile,BufRead Podfile set syntax=ruby
+augroup END
+
+" JavaScript, CSS, HTML, etc.
+augroup js
+    au!
+
+    au BufRead,BufNewFile *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html setlocal expandtab shiftwidth=2 softtabstop=2
+augroup END
+
+" EDITOR SETTINGS
+
 filetype plugin indent on
 set autoindent
 set timeoutlen=300 " http://stackoverflow.com/questions/2158516/delay-before-o-opens-a-new-line
@@ -163,9 +213,6 @@ set printoptions=paper:letter
 " Always draw sign column. Prevent buffer moving when adding/deleting sign.
 " set signcolumn=yes
 set number relativenumber
-
-" Syntax autocmds
-autocmd BufNewFile,BufRead Podfile set syntax=ruby
 
 inoremap <M-o> ø
 
@@ -192,11 +239,6 @@ set softtabstop=4
 set tabstop=4
 set expandtab
 
-" Except for some contexts
-autocmd Filetype tex setlocal shiftwidth=2
-autocmd Filetype tex setlocal softtabstop=2
-autocmd Filetype tex setlocal tabstop=2
-
 " Wrapping options
 set fo=c " wrap text and comments using textwidth
 set fo+=r " continue comments when pressing ENTER in I mode
@@ -205,12 +247,6 @@ set fo+=a " automatically reformat paragraphs while typing
 set fo+=w " only wrap lines that end in whitespace
 set fo+=n " detect lists for formatting
 set textwidth=100
-
-autocmd Filetype tex setlocal fo-=c
-autocmd Filetype tex setlocal fo+=tc
-
-" Wrapping options for LaTeX
-" autocmd Filetype tex setlocal fo=ant " automatically wrap text and numbered lists
 
 " Proper search
 set incsearch
@@ -242,9 +278,7 @@ command! -bang -nargs=* Rg
   \           : fzf#vim#with_preview('right:50%:hidden', '?'),
 \ <bang>0)
 
-" =============================================================================
-" # Keyboard shortcuts
-" =============================================================================
+" KEYBOARD SHORTCUTS
 
 " Open hotkeys
 map <C-p> :Files<CR>
@@ -268,24 +302,14 @@ nnoremap <right> :bn<CR>
 nnoremap <leader><leader> <c-^>
 
 " Build commands
-noremap M :!make -k -j4<cr>
-autocmd Filetype rust map <buffer> M :!cargo build<cr>
-nnoremap <leader>cb :!cargo build<cr>
-nnoremap <leader>xb :!xcodebuild build \| xcpretty<cr>
-nnoremap <leader>xbc :!xcodebuild clean \| xcpretty<cr>
-
-" Split creation
-"nnoremap <leader>| :e <C-R>=expand("%:p:h") . "/" <CR>
+noremap M :make<cr>
+noremap MM :!cd %:p:h \| make<cr>
 
 " Window splitting
 nmap <silent> <leader>sh :leftabove vnew<cr>
 nmap <silent> <leader>sl :rightbelow vnew<cr>
 nmap <silent> <leader>sk :leftabove new<cr>
 nmap <silent> <leader>sj :rightbelow new<cr>
-nmap <silent> <leader>swh :topleft vnew<cr>
-nmap <silent> <leader>swl :botright vnew<cr>
-nmap <silent> <leader>swk :topleft new<cr>
-nmap <silent> <leader>swj :botright new<cr>
 
 " Easier split navigation
 nnoremap <C-J> <C-W><C-J>
@@ -297,77 +321,17 @@ nnoremap <C-H> <C-W><C-H>
 nmap <silent> <leader>j <c-w>w<c-d><c-w>W
 nmap <silent> <leader>k <c-w>w<c-u><c-w>W
 
-" Save and restore sessions
-" nmap <leader>ss :wa<cr>:mksession! $HOME/config/.nvim/sessions/
-" nmap <leader>rs :wa<cr>:source $HOME/config/.nvim/sessions/
-
 " Toggle search highlighting
 nmap <silent> <leader>/ :set hlsearch!<cr>
 
 " Write buffer through sudo
 cnoreabbrev w!! w !sudo tee % >/dev/null
 
-"here is a more exotic version of my original Kwbd script
-"delete the buffer; keep windows; create a scratch buffer if no buffers left
-function s:Kwbd(kwbdStage)
-  if(a:kwbdStage == 1)
-    if(!buflisted(winbufnr(0)))
-      bd!
-      return
-    endif
-    let s:kwbdBufNum = bufnr("%")
-    let s:kwbdWinNum = winnr()
-    windo call s:Kwbd(2)
-    execute s:kwbdWinNum . 'wincmd w'
-    let s:buflistedLeft = 0
-    let s:bufFinalJump = 0
-    let l:nBufs = bufnr("$")
-    let l:i = 1
-    while(l:i <= l:nBufs)
-      if(l:i != s:kwbdBufNum)
-        if(buflisted(l:i))
-          let s:buflistedLeft = s:buflistedLeft + 1
-        else
-          if(bufexists(l:i) && !strlen(bufname(l:i)) && !s:bufFinalJump)
-            let s:bufFinalJump = l:i
-          endif
-        endif
-      endif
-      let l:i = l:i + 1
-    endwhile
-    if(!s:buflistedLeft)
-      if(s:bufFinalJump)
-        windo if(buflisted(winbufnr(0))) | execute "b! " . s:bufFinalJump | endif
-      else
-        enew
-        let l:newBuf = bufnr("%")
-        windo if(buflisted(winbufnr(0))) | execute "b! " . l:newBuf | endif
-      endif
-      execute s:kwbdWinNum . 'wincmd w'
-    endif
-    if(buflisted(s:kwbdBufNum) || s:kwbdBufNum == bufnr("%"))
-      execute "bd! " . s:kwbdBufNum
-    endif
-    if(!s:buflistedLeft)
-      set buflisted
-      set bufhidden=delete
-      set buftype=
-      setlocal noswapfile
-    endif
-  else
-    if(bufnr("%") == s:kwbdBufNum)
-      let prevbufvar = bufnr("#")
-      if(prevbufvar > 0 && buflisted(prevbufvar) && prevbufvar != s:kwbdBufNum)
-        b #
-      else
-        bn
-      endif
-    endif
-  endif
-endfunction
-
-command! Kwbd call s:Kwbd(1)
-nnoremap <silent> <Plug>Kwbd :<C-u>Kwbd<CR>
-
-" Create a mapping (e.g. in your .vimrc) like this:
-nmap <leader>bk <Plug>Kwbd
+" from http://sheerun.net/2014/03/21/how-to-boost-your-vim-productivity/
+if executable('ag')
+    set grepprg=ag\ --nogroup\ --nocolor
+endif
+if executable('rg')
+    set grepprg=rg\ --no-heading\ --vimgrep
+    set grepformat=%f:%l:%c:%m
+endif

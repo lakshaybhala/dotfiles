@@ -1,6 +1,6 @@
 ;;; Conditionally loads os-specific settings.
 
-;; check OS type
+;; Check OS type
 (cond
  ((string-equal system-type "darwin")
   (progn

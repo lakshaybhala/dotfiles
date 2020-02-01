@@ -1,5 +1,5 @@
-# Created by https://www.gitignore.io/api/xcode,emacs,macos,jetbrains,sublimetext
-# Edit at https://www.gitignore.io/?templates=xcode,emacs,macos,jetbrains,sublimetext
+# Created by https://www.gitignore.io/api/xcode,linux,macos,emacs,jetbrains,sublimetext
+# Edit at https://www.gitignore.io/?templates=xcode,linux,macos,emacs,jetbrains,sublimetext
 
 ### Emacs ###
 # -*- mode: gitignore; -*-
@@ -86,6 +86,8 @@ flycheck_*.el
 # .idea/modules.xml
 # .idea/*.iml
 # .idea/modules
+# *.iml
+# *.ipr
 
 # CMake
 cmake-build-*/
@@ -129,7 +131,28 @@ fabric.properties
 # *.ipr
 
 # Sonarlint plugin
-.idea/sonarlint
+.idea/**/sonarlint/
+
+# SonarQube Plugin
+.idea/**/sonarIssues.xml
+
+# Markdown Navigator plugin
+.idea/**/markdown-navigator.xml
+.idea/**/markdown-navigator/
+
+### Linux ###
+
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+# .nfs files are created when an open file is removed but is still being accessed
+.nfs*
 
 ### macOS ###
 # General
@@ -216,12 +239,14 @@ DerivedData/
 *.perspectivev3
 !default.perspectivev3
 
-### Xcode Patch ###
+## Xcode Patch
 *.xcodeproj/*
 !*.xcodeproj/project.pbxproj
 !*.xcodeproj/xcshareddata/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
+
+### Xcode Patch ###
 **/xcshareddata/WorkspaceSettings.xcsettings
 
-# End of https://www.gitignore.io/api/xcode,emacs,macos,jetbrains,sublimetext
+# End of https://www.gitignore.io/api/xcode,linux,macos,emacs,jetbrains,sublimetext
