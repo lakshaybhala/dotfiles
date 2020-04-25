@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# -k  --> new-window will not be created if already exists
+# -d  --> start session or window, but don't attach to it yet
+# -s  --> name the session
+# -t  --> specify a target location in the form session:window.pane
+
+function has-session {
+    byobu has-session -t $1 2>/dev/null
+}
+
+function except {
+    if [ "$?" -eq 1 ] ; then
+        echo "starting byobu session $x"
+        $1
+    else
+        echo "byobu session $x already running"
+    fi
+}
+
+# Configure your sessions here
+SESSIONS="main"
+
+function session-main {
+    byobu new-session -d -s main -n status "while true; asciiquarium; end"
+    byobu split-window -h -t main:0.0 "while true; gotop; end"
+    byobu split-window -v -t main:0.0 "while true; htop; end"
+    # byobu new-window -k -t main:1 -n aerc aerc
+    # byobu new-window -k -t main:2 -n tiny tiny
+    byobu new-window -k -t main:1 -n fish fish
+}
+
+#MAIN
+for x in $SESSIONS
+do
+    has-session $x
+    except session-$x
+done
