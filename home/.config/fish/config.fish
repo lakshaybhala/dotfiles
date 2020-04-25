@@ -8,6 +8,23 @@ if status --is-interactive
     homeshick --quiet refresh
 end
 
+# Platform-specific config
+if [ (uname) = "Darwin" ]
+    # macOS-specific config
+
+    # Java
+    set -xg JAVA_HOME "/Library/Java/JavaVirtualMachines/jdk-11.0.1.jdk/Contents/Home"
+
+    # Byobu
+    set -xg BYOBU_PREFIX "/usr/local"
+
+    # Swift (for language server)
+    set -xg SOURCEKIT_TOOLCHAIN_PATH ""
+
+    # Homebrew
+    set -xg PATH /usr/local/sbin $PATH
+end
+
 # Rust
 # Path to Rust source
 set -xg RUST_SRC_PATH (eval $HOME/.cargo/bin/rustc --print sysroot)"/lib/rustlib/src/rust/src"
@@ -37,6 +54,8 @@ if status --is-interactive
     abbr -a -g grep rg
     # `cargo build` takes too long to type
     abbr -a -g cb cargo build
+    # Start byobu and attach to the main session
+    abbr -a -g byobme "~/.byobu/startup; and byobu attach -t main"
 end
 
 # Misc config
@@ -51,4 +70,12 @@ set -xg LANG en_GB.UTF-8
 # Load secret info
 if [ -e ~/.config/fish/secret.fish ]
     source ~/.config/fish/secret.fish
+end
+
+# Interactive things
+if status --is-interactive
+    # Load starfish prompt
+    starship init fish | source
+    # Load `fuck`
+    thefuck --alias | source
 end
