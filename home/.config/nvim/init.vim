@@ -1,8 +1,16 @@
-" Fish doesn't play all that well with others
+" =============
+" INITIAL SETUP
+" =============
+
+" Set the shell nvim uses to bash
 set shell=/bin/bash
+
+" Set the leader key to space
 let mapleader = "\<Space>"
 
+" =======
 " PLUGINS
+" =======
 
 " Install vim-plug if it isn't already
 if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
@@ -14,261 +22,372 @@ endif
 " Start installing plugins
 call plug#begin('~/.local/share/nvim/plugged')
 
-" Vim enhancements
-Plug 'ciaranm/securemodelines'
-
-" GUI
+" Appearance
+" ----------
+" Display an info bar (lightline) at the bottom of the screen
 Plug 'itchyny/lightline.vim'
+" Highlight the region just yanked
 Plug 'machakann/vim-highlightedyank'
+" Only display relative numbers in places that make sense
 Plug 'jeffkreeftmeijer/vim-numbertoggle'
 
-" Fuzzy finder
+" Editing
+" -------
+" Expand or contract the current selection
+Plug 'terryma/vim-expand-region'
+" Jump to an instance of two characters (rather than 1 with default f)
+Plug 'justinmk/vim-sneak'
+
+" Files
+" -----
+" Change working directory to the project root when opening a file
 Plug 'airblade/vim-rooter'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+" Fuzzy file finder
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
 " Semantic language support
-Plug 'ncm2/ncm2'
-Plug 'roxma/nvim-yarp'
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
-Plug 'dense-analysis/ale'
-
-" Completion plugins
-Plug 'ncm2/ncm2-bufword'
-Plug 'ncm2/ncm2-tmux'
-Plug 'ncm2/ncm2-path'
+" -------------------------
+" Language server support
+Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+" Completion support
+Plug 'lifepillar/vim-mucomplete'
 
 " Syntactic language support
-Plug 'cespare/vim-toml'
-Plug 'lervag/vim-latex'
+" --------------------------
+" Languages under active use
 Plug 'rust-lang/rust.vim'
-Plug 'keith/swift.vim'
-Plug 'dag/vim-fish'
-Plug 'godlygeek/tabular'
-Plug 'plasticboy/vim-markdown'
-Plug 'uarun/vim-protobuf'
-Plug 'vmchale/ion-vim'
+Plug 'cespare/vim-toml'
 Plug 'lervag/vimtex'
-Plug 'elmcast/elm-vim'
+Plug 'dag/vim-fish'
+Plug 'plasticboy/vim-markdown'
+" Other languages
 Plug 'pangloss/vim-javascript'
 Plug 'maxmellon/vim-jsx-pretty'
+Plug 'vmchale/ion-vim'
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'uarun/vim-protobuf'
 Plug 'jparise/vim-graphql'
+Plug 'unisonweb/unison', { 'rtp': 'editor-support/vim' }
+Plug 'keith/swift.vim'
 Plug 'derekwyatt/vim-scala'
+Plug 'elmcast/elm-vim'
+Plug 'gleam-lang/gleam.vim'
+" Extra tools
+Plug 'godlygeek/tabular'
 
+" Utility
+" -------
+" Protection against modeline vulnerability
+Plug 'ciaranm/securemodelines'
+
+" Finish installing plugins
 call plug#end()
 
+" ===============
 " PLUGIN SETTINGS
+" ===============
 
-" ncm2
-let g:python3_host_prog = '/usr/local/bin/python3'
-set completeopt=noinsert,menuone,noselect
-
-" tab to select
-" and don't hijack my enter key
-inoremap <expr><Tab> (pumvisible()?(empty(v:completed_item)?"\<C-n>":"\<C-y>"):"\<Tab>")
-inoremap <expr><CR> (pumvisible()?(empty(v:completed_item)?"\<CR>\<CR>":"\<C-y>"):"\<CR>")
-
-augroup ncm2
-    au!
-
-    au BufEnter * call ncm2#enable_for_buffer()
-augroup END
-
-" LanguageClient-neovim
-let g:LanguageClient_serverCommands = {
-    \ 'rust': ['~/.cargo/bin/rustup', 'run', 'nightly', 'rls']
-    \ }
-
-" ALE
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_lint_on_insert_leave = 1
-let g:ale_lint_on_save = 1
-let g:ale_lint_on_enter = 0
-let g:ale_linters = {
-    \ 'rust': ['rls'],
-    \ 'go': ['gopls'],
-    \ 'c': ['clangd'],
-\ }
-
-let g:ale_fix_on_save = 1
-let g:ale_fixers = {
-    \ 'javascript': ['eslint', 'prettier'],
-    \ 'rust': ['rustfmt'],
-\ }
-
-let g:ale_rust_rls_toolchain = 'nightly'
-let g:ale_rust_rls_config = {
-    \ 'rust': {
-        \   'all_targets': 1,
-        \   'all_features': 1,
-        \   'build_on_save': 1,
-        \   'clippy_preference': 'on'
-    \ }
-\ }
-
-let g:ale_virtualtext_cursor = 1
-
-highlight link ALEWarningSign Todo
-highlight link ALEErrorSign WarningMsg
-highlight link ALEVirtualTextWarning Todo
-highlight link ALEVirtualTextInfo Todo
-highlight link ALEVirtualTextError WarningMsg
-highlight ALEError guibg=None
-highlight ALEWarning guibg=None
-let g:ale_sign_error = "✖"
-let g:ale_sign_warning = "⚠"
-let g:ale_sign_info = "i"
-let g:ale_sign_hint = "➤"
-
-nnoremap <silent> K :ALEHover<CR>
-nnoremap <silent> gd :ALEGoToDefinition<CR>
-nnoremap <silent> <leader>r :ALERename<CR>
-
-" Lightline
-let g:lightline = { 'colorscheme': 'wombat' }
+" lightline.vim
+" -------------
+" Turn off default nvim display of current mode, because it's shown in lightline
+set noshowmode
+" Set a colour scheme and add a custom filename pattern.
 let g:lightline = {
-      \ 'component_function': {
-      \   'filename': 'LightlineFilename',
-      \ },
+    \   'colorscheme': 'deus',
+    \   'component_function': {
+    \       'filename': 'LightlineFilename',
+    \   },
 \ }
 function! LightlineFilename()
   return expand('%:t') !=# '' ? @% : '[No Name]'
 endfunction
 
-" LANGUAGE SETTINGS
+" vim-expand-region
+" -----------------
+" Use v when in visual mode to expand the current selection, and C-v to contract it
+vmap v <Plug>(expand_region_expand)
+vmap <C-v> <Plug>(expand_region_shrink)
 
-" Rust
-augroup rust
-    au!
+" vim-rooter
+" ----------
+" Set file and directory patterns for detection of project root
+let g:rooter_patterns = ['Cargo.toml', '.gitignore', '.git', '.git/']
 
-    au Filetype rust set makeprg=cargo\ build
-augroup END
+" fzf.vim
+" -------
+" Shrink the size of the fzf file finder window
+let g:fzf_layout = { 'down': '~20%' }
+" Open a fuzzy file finder with C-p and a fuzzy buffer finder with leader-;
+map <C-p> :Files<CR>
+nmap <leader>; :Buffers<CR>
+
+" coc.nvim
+" --------
+" List of language server extensions to install if they aren't already
+let g:coc_global_extensions = [
+    \ "coc-clangd",
+    \ "coc-git",
+    \ "coc-html",
+    \ "coc-json",
+    \ "coc-markdownlint",
+    \ "coc-omnisharp",
+    \ "coc-rls",
+    \ "coc-sourcekit",
+    \ "coc-yaml",
+    \ ]
+" Customise some of the colours used in the Coc Pmenu
+hi CocFloating ctermbg=black
+" Always show the signcolumn, and give it a transparent background
+set signcolumn=yes
+hi SignColumn ctermbg=none
+" Rename the symbol under the cursor with <leader>rn
+nmap <silent> gr <Plug>(coc-rename)
+" Jump to the definition with gd
+nmap <silent> gd <Plug>(coc-definition)
+" Jump to implementations with gi
+nmap <silent> gi <Plug>(coc-implementation)
+" Jump to usages with gu
+nmap <silent> gu <Plug>(coc-references)
+" Show documentation in the preview window for the symbol under the cursor when pressing K
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" vim-mucomplete
+" --------------
+" mucomplete says this option is required
+set completeopt=menu
+set completeopt+=menuone
+set completeopt+=noinsert
+" Turn off completion messages
+set shortmess+=c
+" Turn off auto-completion at startup
+let g:mucomplete#enable_auto_at_startup = 0
+" Set up completion chains
+let g:mucomplete#chains = {
+\   'default': ['tags', 'nsnp'],
+\   'rust': {
+\     'default': ['omni', 'nsnp'],
+\     'rustString.*': [],
+\     'rustComment.*': ['spel'],
+\   },
+\   'vim' : {
+\     'default': ['cmd', 'nsnp', 'keyn'],
+\     'vimComment.*': [],
+\     'vimString.*': ['spel']
+\   },
+\ }
+
 " rust.vim
-let g:rustfmt_command = '~/.cargo/bin/rustup run nightly rustfmt'
+" --------
+" Turn on automatic formatting on save using nightly rustfmt
+let g:rustfmt_command = 'rustup run nightly rustfmt'
 let g:rustfmt_autosave = 1
 
-" LaTeX
-let g:latex_indent_enabled = 1
-let g:latex_fold_envs = 0
-let g:latex_fold_sections = []
-
-let g:vimtex_imaps_leader = ';'
+" vimtex
+" ------
+" Explicitly specify that TeX is always really LaTeX
 let g:tex_flavor = 'latex'
+" Set the leader key for insert-mode bindings
+let g:vimtex_imaps_leader = ';'
 
+" vim-markdown
+" ------------
+" Disable automatic folding of sections in Markdown files
+let g:vim_markdown_folding_disabled = 1
+
+" =================
+" LANGUAGE SETTINGS
+" =================
+
+" LaTeX
+" -----
 augroup latex
     au!
 
     " Set filetype correctly for .cls files
-    au BufNewFile,BufRead *.cls set syntax=tex
+    au BufNewFile,BufRead *.cls setlocal syntax=tex
 
-    au Filetype tex setlocal shiftwidth=2
-    au Filetype tex setlocal softtabstop=2
-    au Filetype tex setlocal tabstop=2
+    " Set indentation levels for LaTeX files
+    au Filetype tex setlocal shiftwidth=2 softtabstop=2
 
+    " In LaTeX files, we want to wrap both "normal text" and comments.
     au Filetype tex setlocal fo-=c
     au Filetype tex setlocal fo+=tc
 
-    au Filetype tex set makeprg=ninja
+    " Build TeX files with ninja, not make, when running a make keybinding
+    au Filetype tex setlocal makeprg=ninja
 augroup END
 
-" Markdown
-let g:vim_markdown_folding_disabled = 1
+" JavaScript and Web Languages
+" ----------------------------
+augroup web
+    au!
+
+    " Set an indentation level of 2 spaces for JavaScript and TypeScript files
+    au BufRead,BufNewFile *.js,*.jsx,*.mjs,*.ts,*.tsx setlocal shiftwidth=2 softtabstop=2
+    " Same for CSS-family files
+    au BufRead,BufNewFile *.css,*.less,*.scss,*.sass setlocal shiftwidth=2 softtabstop=2
+    " Same for markup languages
+    au BufRead,BufNewFile *.html,*.md,*.yaml setlocal shiftwidth=2 softtabstop=2
+    " Same for other JS-adjacent file types
+    au BufRead,BufNewFile *.graphql,*.json setlocal shiftwidth=2 softtabstop=2
+augroup END
 
 " Ruby
-augroup ruby
+" ----
+augroup rb
     au!
 
     " Set filetype correctly for Podfiles
-    au BufNewFile,BufRead Podfile set syntax=ruby
+    au BufNewFile,BufRead Podfile setlocal syntax=ruby
 augroup END
 
-" JavaScript, CSS, HTML, etc.
-augroup js
+" Email
+" -----
+augroup eml
     au!
 
-    au BufRead,BufNewFile *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.yaml,*.html setlocal expandtab shiftwidth=2 softtabstop=2
+    " Set the textwidth to the smaller standard 72 chars for emails
+    au BufRead,BufNewFile *.eml setlocal textwidth=72
 augroup END
 
+" ===============
 " EDITOR SETTINGS
+" ===============
 
+" Text Editing
+" ------------
+" Turn on filetype detection and plugin/indent info loading
 filetype plugin indent on
-set autoindent
-set timeoutlen=300 " http://stackoverflow.com/questions/2158516/delay-before-o-opens-a-new-line
-set encoding=utf-8
-set scrolloff=2
-set noshowmode
-set hidden
-set nowrap
-set nojoinspaces
-let g:sneak#s_next = 1
-let g:vim_markdown_new_list_item_indent = 0
-let g:vim_markdown_auto_insert_bullets = 0
-let g:vim_markdown_frontmatter = 1
-set printfont=:h10
-set printencoding=utf-8
-set printoptions=paper:letter
-" Always draw sign column. Prevent buffer moving when adding/deleting sign.
-" set signcolumn=yes
-set number relativenumber
-
-inoremap <M-o> ø
-
-" Settings needed for .lvimrc
-set exrc
-set secure
-
-" Sane splits
-set splitright
-set splitbelow
-
-" Permanent undo
-set undodir=~/.vimdid
-set undofile
-
-" Decent wildmenu
-set wildmenu
-set wildmode=list:longest
-set wildignore=.hg,.svn,*~,*.png,*.jpg,*.gif,*.settings,Thumbs.db,*.min.js,*.swp,publish/*,intermediate/*,*.o,*.hi,Zend,vendor
-
 " Use 4-space indentation
 set shiftwidth=4
 set softtabstop=4
-set tabstop=4
 set expandtab
-
-" Wrapping options
-set fo=c " wrap text and comments using textwidth
-set fo+=r " continue comments when pressing ENTER in I mode
-set fo+=q " enable formatting of comments with gq
-set fo+=a " automatically reformat paragraphs while typing
-set fo+=w " only wrap lines that end in whitespace
-set fo+=n " detect lists for formatting
+" Auto-indent on new lines
+set autoindent
+" Don't insert two spaces after certain characters when using a join command
+set nojoinspaces
+" Wrap to 100 characters
 set textwidth=100
+" Format options (default fo=jcroql)
+set fo=ca " Auto-wrap comments to textwidth
+set fo+=r " Auto-insert the current comment leader when pressing enter in insert mode
+set fo+=o " Auto-insert the current comment leader when entering new lines with o
+set fo+=q " Allow `gq` to format comments
+set fo+=w " Use a single trailing whitespace character to indicate continuing paragraphs
+set fo+=n " Format numbered lists as well
+set fo+=j " Auto-remove comment characters when joining lines
+" Let me type my own name
+inoremap <M-o> ø
 
-" Proper search
+" Text Display
+" ------------
+" Display tab characters with a width of 8 spaces
+set tabstop=8
+" Set the number of lines to keep visible above and below the cursor at the top and bottom of the
+" screen
+set scrolloff=2
+" Don't soft-wrap long lines to display them in the buffer
+set nowrap
+" Display line numbers in the sidebar
+set number
+" Display line numbers for every line but the current one as an offset
+set relativenumber
+
+" Searching
+" ---------
+" Jump to search results as the search pattern is typed
 set incsearch
+" Ignore case in search results by default
 set ignorecase
+" Don't ignore case if the search pattern contains uppercase characters
 set smartcase
-
-" Search results centered please
+" Vertically centre search results in the buffer when jumping to them
 nnoremap <silent> n nzz
 nnoremap <silent> N Nzz
 nnoremap <silent> * *zz
 nnoremap <silent> # #zz
 nnoremap <silent> g* g*zz
-
-" Very magic by default
+" Turn on magic options for searching by default
 nnoremap ? ?\v
 nnoremap / /\v
 cnoremap %s/ %sm/
+" Set the grep program to ag or rg (preferred) if available
+if executable('ag')
+  set grepprg=ag\ --nogroup\ --nocolor
+endif
+if executable('rg')
+  set grepprg=rg\ --no-heading\ --vimgrep
+  set grepformat=%f:%l:%c:%m
+endif
 
-" Suspend
+" Utility
+" -------
+" Use undo files for permanent undo history
+set undodir=~/.local/share/nvim/did
+set undofile
+" Hide buffers when they're abandoned rather than unloading them
+set hidden
+" Set up wildmenu for decent completions
+set wildmenu
+set wildmode=list:longest
+set wildignore=.hg,.svn,*~,*.png,*.jpg,*.gif,*.settings,Thumbs.db,*.min.js,*.swp,publish/*,intermediate/*,*.o,*.hi,Zend,vendor
+
+" Annoyance Fixes
+" ---------------
+" Split in sane directions by default
+set splitright
+set splitbelow
+" Reduce the time before vim executes a command
+set timeoutlen=300
+
+" Platform Specific
+" -----------------
+let OS=substitute(system('uname -s'),"\n","","")
+if (OS == "Darwin")
+    " macOS Specific Settings
+elseif ( OS == 'Linux' )
+    " Linux Specific Settings
+endif
+
+" ==================
+" KEYBOARD SHORTCUTS
+" ==================
+
+" Quick-save with <leader>w
+nmap <leader>w :w<CR>
+
+" Write buffer through sudo
+cnoreabbrev w!! w !sudo tee % >/dev/null
+
+" Suspend nvim
 nnoremap <leader>ss :sus<cr>
 
-" <leader>s for Rg search
+" Copy and paste to/from system clipboard
+vmap <leader>y "+y
+vmap <leader>d "+d
+nmap <leader>p "+p
+nmap <leader>P "+P
+vmap <leader>p "+p
+vmap <leader>P "+P
+
+" Quick switch between the last two buffers using <leader><leader>
+nnoremap <leader><leader> <c-^>
+
+" Open a new file adjacent to current file
+nnoremap <leader>e :e <C-R>=expand("%:p:h") . "/" <CR>
+
+" Toggle search highlighting
+nmap <silent> <leader>/ :set hlsearch!<cr>
+
+" Run a Rg search with <leader>s
 noremap <leader>s :Rg
 let g:fzf_layout = { 'down': '~20%' }
 command! -bang -nargs=* Rg
@@ -278,60 +397,19 @@ command! -bang -nargs=* Rg
   \           : fzf#vim#with_preview('right:50%:hidden', '?'),
 \ <bang>0)
 
-" KEYBOARD SHORTCUTS
-
-" Open hotkeys
-map <C-p> :Files<CR>
-nmap <leader>; :Buffers<CR>
-
-" Quick-save
-nmap <leader>w :w<CR>
-
-" Copy and paste from outside nvim
-noremap <leader>p "+p
-noremap <leader>y "+y
-
-" Open new file adjacent to current file
-nnoremap <leader>e :e <C-R>=expand("%:p:h") . "/" <CR>
-
-" Left and right can switch buffers
-nnoremap <left> :bp<CR>
-nnoremap <right> :bn<CR>
-
-" <leader><leader> toggles between buffers
-nnoremap <leader><leader> <c-^>
-
-" Build commands
-noremap M :make<cr>
-noremap MM :!cd %:p:h \| make<cr>
-
-" Window splitting
+" Create splits with <leader>s and a direction
 nmap <silent> <leader>sh :leftabove vnew<cr>
 nmap <silent> <leader>sl :rightbelow vnew<cr>
 nmap <silent> <leader>sk :leftabove new<cr>
 nmap <silent> <leader>sj :rightbelow new<cr>
 
-" Easier split navigation
+" Move between splits with C and a direction
 nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
-" Scroll the window next to the current one (especially useful for two-window split)
-nmap <silent> <leader>j <c-w>w<c-d><c-w>W
-nmap <silent> <leader>k <c-w>w<c-u><c-w>W
-
-" Toggle search highlighting
-nmap <silent> <leader>/ :set hlsearch!<cr>
-
-" Write buffer through sudo
-cnoreabbrev w!! w !sudo tee % >/dev/null
-
-" from http://sheerun.net/2014/03/21/how-to-boost-your-vim-productivity/
-if executable('ag')
-    set grepprg=ag\ --nogroup\ --nocolor
-endif
-if executable('rg')
-    set grepprg=rg\ --no-heading\ --vimgrep
-    set grepformat=%f:%l:%c:%m
-endif
+" Run make from the current directory
+noremap M :make<cr>
+" Run make from the directory containing the current file
+noremap MM :!cd "%:p:h" \| make<cr>
