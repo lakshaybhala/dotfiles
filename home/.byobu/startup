@@ -23,10 +23,8 @@ SESSIONS="main"
 
 function session-main {
     # byobu new-session -d -s main -n status "while true; asciiquarium; end"
-    # byobu split-window -h -t main:0.0 "while true; gotop; end"
-    # byobu split-window -v -t main:0.0 "while true; htop; end"
-    # byobu new-window -k -t main:1 -n aerc aerc
-    # byobu new-window -k -t main:2 -n tiny tiny
+    # byobu split-window -h -t main:0.0 "while true; zenith --disable-history; end"
+    # byobu split-window -v -t main:0.0 "while true; gotop; end"
     byobu new-window -k -t main:1 -n fish fish
 }
 
