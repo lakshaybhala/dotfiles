@@ -13,7 +13,7 @@ if [ (uname) = "Darwin" ]
     # macOS-specific config
 
     # Java
-    set -xg JAVA_HOME "/Library/Java/JavaVirtualMachines/jdk-11.0.1.jdk/Contents/Home"
+    set -xg JAVA_HOME "/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home"
 
     # Byobu
     set -xg BYOBU_PREFIX "/usr/local"
@@ -23,6 +23,13 @@ if [ (uname) = "Darwin" ]
 
     # Homebrew
     set -xg PATH /usr/local/sbin $PATH
+else if [ (uname) = "Linux" ]
+    # Linux-specific config
+
+    # Aliases
+    # Replicate functionality of `pbcopy`/`pbpaste` (from macOS) using `xclip`
+    alias pbcopy "xclip -selection clipboard"
+    alias pbpaste "xclip -selection clipboard -o"
 end
 
 # Rust
@@ -54,6 +61,10 @@ if status --is-interactive
     abbr -a -g grep rg
     # `cargo build` takes too long to type
     abbr -a -g cb cargo build
+    # `nvim` sometimes is even too long; use e to call the edit function
+    abbr -a -g e edit
+    # Train muscle memory not to type nvim
+    abbr -a -g nvim "echo 'BAD MUSCLES' #"
     # Start byobu and attach to the main session
     abbr -a -g byobme "~/.byobu/startup; and byobu attach -t main"
 end
@@ -72,10 +83,15 @@ if [ -e ~/.config/fish/secret.fish ]
     source ~/.config/fish/secret.fish
 end
 
-# Interactive things
+# Interactive things, with checks that they exist
 if status --is-interactive
     # Load starfish prompt
-    starship init fish | source
+    if command -v starship > /dev/null
+        starship init fish | source
+    end
+
     # Load `fuck`
-    thefuck --alias | source
+    if command -v thefuck > /dev/null
+        thefuck --alias | source
+    end
 end
