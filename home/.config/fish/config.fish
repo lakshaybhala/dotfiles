@@ -61,8 +61,9 @@ if status --is-interactive
     abbr -a -g grep rg
     # `cargo build` takes too long to type
     abbr -a -g cb cargo build
-    # `nvim` sometimes is even too long; use e to call the edit function
-    abbr -a -g e edit
+    # Use e or edit to open the current text editor
+    abbr -a -g e $EDITOR
+    abbr -a -g edit $EDITOR
     # Train muscle memory not to type nvim
     abbr -a -g nvim "echo 'BAD MUSCLES' #"
     # Start byobu and attach to the main session
