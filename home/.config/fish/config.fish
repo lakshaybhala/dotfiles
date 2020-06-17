@@ -43,6 +43,15 @@ $HOME/.cargo/bin \
 # Existing $PATH
 $PATH
 
+# Misc config
+# Make `less` clear its output on closing
+set -xg LESS R
+# Set the default editor to `nvim`
+set -xg EDITOR "nvim"
+# Set language
+set -xg LC_ALL en_GB.UTF-8
+set -xg LANG en_GB.UTF-8
+
 # Abbreviations
 if status --is-interactive
     # Use exa instead of ls
@@ -69,15 +78,6 @@ if status --is-interactive
     # Start byobu and attach to the main session
     abbr -a -g byobme "~/.byobu/startup; and byobu attach -t main"
 end
-
-# Misc config
-# Make `less` clear its output on closing
-set -xg LESS R
-# Set the default editor to `nvim`
-set -xg EDITOR "nvim"
-# Set language
-set -xg LC_ALL en_GB.UTF-8
-set -xg LANG en_GB.UTF-8
 
 # Load secret info
 if [ -e ~/.config/fish/secret.fish ]
