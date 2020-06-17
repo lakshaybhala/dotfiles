@@ -1,0 +1,21 @@
+{
+	"bootstrapped": true,
+	"in_process_packages":
+	[
+	],
+	"installed_packages":
+	[
+		"A File Icon",
+		"Anaconda",
+		"AutoWrap",
+		"Boxy Theme",
+		"Color Highlighter",
+		"Decent Swift Syntax",
+		"fish",
+		"Fix Mac Path",
+		"JsPrettier",
+		"LaTeXTools",
+		"Package Control",
+		"WordCount"
+	]
+}
