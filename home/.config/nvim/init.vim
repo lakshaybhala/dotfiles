@@ -75,6 +75,7 @@ Plug 'elmcast/elm-vim'
 Plug 'gleam-lang/gleam.vim'
 " Extra tools
 Plug 'godlygeek/tabular'
+Plug 'rhysd/vim-clang-format'
 
 " Utility
 " -------
@@ -112,15 +113,24 @@ vmap <C-v> <Plug>(expand_region_shrink)
 " vim-rooter
 " ----------
 " Set file and directory patterns for detection of project root
-let g:rooter_patterns = ['Cargo.toml', '.gitignore', '.git', '.git/']
+let g:rooter_patterns = ['Makefile', 'CMakeLists.txt', '.git', '.git/']
 
 " fzf.vim
 " -------
 " Shrink the size of the fzf file finder window
 let g:fzf_layout = { 'down': '~20%' }
+let $FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 " Open a fuzzy file finder with C-p and a fuzzy buffer finder with leader-;
 map <C-p> :Files<CR>
 nmap <leader>; :Buffers<CR>
+" Run a Rg search with <leader>s
+noremap <leader>s :Rg
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always '.shellescape(<q-args>), 1,
+  \   <bang>0 ? fzf#vim#with_preview('up:60%')
+  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+\ <bang>0)
 
 " coc.nvim
 " --------
@@ -132,10 +142,12 @@ let g:coc_global_extensions = [
     \ "coc-json",
     \ "coc-markdownlint",
     \ "coc-omnisharp",
-    \ "coc-rls",
+    \ "coc-rust-analyzer",
     \ "coc-sourcekit",
     \ "coc-yaml",
     \ ]
+" Shorten the update time of nvim to help with delays
+set updatetime=300
 " Customise some of the colours used in the Coc Pmenu
 hi CocFloating ctermbg=black
 " Always show the signcolumn, and give it a transparent background
@@ -202,9 +214,27 @@ let g:vimtex_imaps_leader = ';'
 " Disable automatic folding of sections in Markdown files
 let g:vim_markdown_folding_disabled = 1
 
+" vim-clang-format
+" ----------------
+let g:clang_format#code_style = 'llvm'
+
 " =================
 " LANGUAGE SETTINGS
 " =================
+
+" Rust
+" ----
+augroup rust | au!
+    " Set the text width in Rust files to 80, for comment wrapping.
+    au Filetype rust setlocal textwidth=80
+augroup END
+
+" C++
+" ----
+augroup cpp | au!
+    au Filetype cpp setlocal shiftwidth=2 softtabstop=2
+    au BufNewFile,BufRead *.cpp,*.hpp :ClangFormatAutoEnable
+augroup END
 
 " LaTeX
 " -----
@@ -386,16 +416,6 @@ nnoremap <leader>e :e <C-R>=expand("%:p:h") . "/" <CR>
 
 " Toggle search highlighting
 nmap <silent> <leader>/ :set hlsearch!<cr>
-
-" Run a Rg search with <leader>s
-noremap <leader>s :Rg
-let g:fzf_layout = { 'down': '~20%' }
-command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading --color=always '.shellescape(<q-args>), 1,
-  \   <bang>0 ? fzf#vim#with_preview('up:60%')
-  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
-\ <bang>0)
 
 " Create splits with <leader>s and a direction
 nmap <silent> <leader>sh :leftabove vnew<cr>

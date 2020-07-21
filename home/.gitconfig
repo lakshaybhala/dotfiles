@@ -26,3 +26,9 @@
     mgvs = merge --verify-signatures -sS
 [pager]
     branch = false
+[pull]
+    rebase = true
+[commit]
+    gpgsign = true
+[gpg]
+    program = gpg2

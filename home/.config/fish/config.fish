@@ -23,6 +23,9 @@ if [ (uname) = "Darwin" ]
 
     # Homebrew
     set -xg PATH /usr/local/sbin $PATH
+
+    # GPG
+    set -xg GPG_TTY (tty)
 else if [ (uname) = "Linux" ]
     # Linux-specific config
 
