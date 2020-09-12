@@ -171,7 +171,7 @@ colors:
 #   - Linear
 #
 # Specifying a `duration` of `0` will disable the visual bell.
-visual_bell:
+bell:
   animation: EaseOutExpo
   duration: 0
   color: "0xffffff"
@@ -270,7 +270,7 @@ shell:
   args:
     - --login
     - -C
-    - "~/.byobu/startup; and echo 'attaching to session main'; and byobu attach -t main"
+    - "tmux-startup >/dev/null 2>&1; and tmux attach -t main"
 
 # Send ESC (\x1b) before characters when alt is pressed.
 alt_send_esc: true

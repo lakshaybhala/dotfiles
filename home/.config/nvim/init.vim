@@ -30,13 +30,23 @@ Plug 'itchyny/lightline.vim'
 Plug 'machakann/vim-highlightedyank'
 " Only display relative numbers in places that make sense
 Plug 'jeffkreeftmeijer/vim-numbertoggle'
+" Display git status of lines
+Plug 'airblade/vim-gitgutter'
+" Show the git blame for the current line
+Plug 'APZelos/blamer.nvim'
+" Additional color schemes
+Plug 'flazz/vim-colorschemes'
+" Coloriser for color codes and things
+Plug 'norcalli/nvim-colorizer.lua'
 
 " Editing
 " -------
 " Expand or contract the current selection
 Plug 'terryma/vim-expand-region'
-" Jump to an instance of two characters (rather than 1 with default f)
-Plug 'justinmk/vim-sneak'
+" Comment lines easily
+Plug 'tpope/vim-commentary'
+" Jump to a specific spot easily
+Plug 'easymotion/vim-easymotion'
 
 " Files
 " -----
@@ -104,16 +114,70 @@ function! LightlineFilename()
   return expand('%:t') !=# '' ? @% : '[No Name]'
 endfunction
 
+" vim-gitgutter
+" ------------
+" Don't map any keys by default
+let g:gitgutter_map_keys = 0
+" Increase the maximum number of signs displayed in a buffer. If nvim starts to get slow, lower this
+" closer to the default.
+let g:gitgutter_max_signs = 10000
+" Set all these signs to a bar so that just colour is used to distinguish
+let g:gitgutter_sign_added = '▏'
+let g:gitgutter_sign_modified = '▏'
+let g:gitgutter_sign_removed = '▏'
+let g:gitgutter_sign_removed_first_line = '▏'
+let g:gitgutter_sign_modified_removed = '▏'
+" Don't highlight line numbers
+let g:gitgutter_highlight_linenrs = 0
+highlight! link SignColumn LineNr
+
+" blamer.nvim
+" -----------
+" Disabled by default; run :BlamerToggle to enable
+let g:blamer_enabled = 0
+" Shorten the delay before updates to blame information
+let g:blamer_delay = 300
+" Don't put a prefix at the beginning of the blame info
+let g:blamer_prefix = ''
+" Include short commit hash in addition to default blame info
+let g:blamer_template = '<committer>, <committer-time> (<commit-short>) • <summary>'
+" Only show the date, not time, in the blame info
+let g:blamer_date_format = '%Y-%m-%d'
+" Use relative date for recent dates
+let g:blamer_relative_time = 1
+
+" vim-colorschemes
+" ----------------
+" Set a color scheme
+colorscheme Tomorrow-Night-Eighties
+
+" nvim-colorizer.lua
+" ------------------
+" Use truecolor support
+set termguicolors
+lua require'colorizer'.setup()
+
 " vim-expand-region
 " -----------------
 " Use v when in visual mode to expand the current selection, and C-v to contract it
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
 
+" easymotion
+" ----------
+" Don't bind any keys by default, because they create conflicts
+let g:EasyMotion_do_mapping = 0
+" <Leader>f{char} to move to {char}
+map <Leader>f <Plug>(easymotion-bd-f)
+nmap <Leader>f <Plug>(easymotion-overwin-f)
+" <Leader>j to jump to a word
+map  <Leader>j <Plug>(easymotion-bd-w)
+nmap <Leader>j <Plug>(easymotion-overwin-w)
+
 " vim-rooter
 " ----------
 " Set file and directory patterns for detection of project root
-let g:rooter_patterns = ['Makefile', 'CMakeLists.txt', '.git', '.git/']
+let g:rooter_patterns = ['.git', '.git/']
 
 " fzf.vim
 " -------
@@ -137,7 +201,6 @@ command! -bang -nargs=* Rg
 " List of language server extensions to install if they aren't already
 let g:coc_global_extensions = [
     \ "coc-clangd",
-    \ "coc-git",
     \ "coc-html",
     \ "coc-json",
     \ "coc-markdownlint",
@@ -149,10 +212,12 @@ let g:coc_global_extensions = [
 " Shorten the update time of nvim to help with delays
 set updatetime=300
 " Customise some of the colours used in the Coc Pmenu
-hi CocFloating ctermbg=black
+hi CocFloating guibg=Black
 " Always show the signcolumn, and give it a transparent background
 set signcolumn=yes
-hi SignColumn ctermbg=none
+hi SignColumn guibg=none
+" Make hint text grey
+hi CocHintSign guifg=Grey
 " Rename the symbol under the cursor with <leader>rn
 nmap <silent> gr <Plug>(coc-rename)
 " Jump to the definition with gd
@@ -238,8 +303,7 @@ augroup END
 
 " LaTeX
 " -----
-augroup latex
-    au!
+augroup latex | au!
 
     " Set filetype correctly for .cls files
     au BufNewFile,BufRead *.cls setlocal syntax=tex
@@ -257,8 +321,7 @@ augroup END
 
 " JavaScript and Web Languages
 " ----------------------------
-augroup web
-    au!
+augroup web | au!
 
     " Set an indentation level of 2 spaces for JavaScript and TypeScript files
     au BufRead,BufNewFile *.js,*.jsx,*.mjs,*.ts,*.tsx setlocal shiftwidth=2 softtabstop=2
@@ -272,8 +335,7 @@ augroup END
 
 " Ruby
 " ----
-augroup rb
-    au!
+augroup rb | au!
 
     " Set filetype correctly for Podfiles
     au BufNewFile,BufRead Podfile setlocal syntax=ruby
@@ -281,11 +343,18 @@ augroup END
 
 " Email
 " -----
-augroup eml
-    au!
+augroup eml | au!
 
     " Set the textwidth to the smaller standard 72 chars for emails
     au BufRead,BufNewFile *.eml setlocal textwidth=72
+augroup END
+
+" YAML
+" ----
+augroup yaml | au!
+
+    " Set the indentation width to 2 spaces for YAML
+    au Filetype yaml setlocal shiftwidth=2 softtabstop=2
 augroup END
 
 " ===============

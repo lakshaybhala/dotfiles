@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# -k  --> new-window will not be created if already exists
+# -d  --> start session or window, but don't attach to it yet
+# -s  --> name the session
+# -t  --> specify a target location in the form session:window.pane
+
+function has-session {
+    tmux has-session -t $1 2>/dev/null
+}
+
+function except {
+    if [ "$?" -eq 1 ] ; then
+        echo "starting tmux session $x"
+        $1
+    else
+        echo "tmux session $x already running"
+    fi
+}
+
+# Configure your sessions here
+SESSIONS="main work"
+
+function session-main {
+    # tmux new-session -d -s main "while true; asciiquarium; end"
+    # tmux split-window -h -t main:0.0 "while true; zenith --disable-history; end"
+    # tmux split-window -v -t main:0.0 "while true; gotop; end"
+    tmux selectp -t main:0.2
+    tmux new-window
+}
+
+function session-work {
+    # tmux new-session -d -s work "fish -C 'z ditto'"
+}
+
+#MAIN
+for x in $SESSIONS
+do
+    has-session $x
+    except session-$x
+done

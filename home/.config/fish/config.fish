@@ -55,6 +55,24 @@ set -xg EDITOR "nvim"
 set -xg LC_ALL en_GB.UTF-8
 set -xg LANG en_GB.UTF-8
 
+# Load secret info
+if [ -e ~/.config/fish/secret.fish ]
+    source ~/.config/fish/secret.fish
+end
+
+# Interactive things, with checks that they exist
+if status --is-interactive
+    # Load starfish prompt
+    if command -v starship > /dev/null
+        starship init fish | source
+    end
+
+    # Load `fuck`
+    if command -v thefuck > /dev/null
+        thefuck --alias | source
+    end
+end
+
 # Abbreviations
 if status --is-interactive
     # Use exa instead of ls
@@ -78,24 +96,8 @@ if status --is-interactive
     abbr -a -g edit $EDITOR
     # Train muscle memory not to type nvim
     abbr -a -g nvim "echo 'BAD MUSCLES' #"
-    # Start byobu and attach to the main session
-    abbr -a -g byobme "~/.byobu/startup; and byobu attach -t main"
-end
-
-# Load secret info
-if [ -e ~/.config/fish/secret.fish ]
-    source ~/.config/fish/secret.fish
-end
-
-# Interactive things, with checks that they exist
-if status --is-interactive
-    # Load starfish prompt
-    if command -v starship > /dev/null
-        starship init fish | source
-    end
-
-    # Load `fuck`
-    if command -v thefuck > /dev/null
-        thefuck --alias | source
-    end
+    # Start tmux and attach to the main session
+    abbr -a -g tmuxme "tmux-startup; and tmux attach -t main"
+    # Attach to a tmux session
+    abbr -a -g tat "tmux attach-session -t"
 end

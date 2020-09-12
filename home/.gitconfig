@@ -5,6 +5,20 @@
 [core]
     editor = nvim
     excludesfile = /Users/LB/.config/git/ignore
+    pager = delta
+[gpg]
+    program = gpg2
+[commit]
+    gpgsign = true
+[pull]
+    rebase = true
+[pager]
+    branch = false
+[delta]
+    syntax-theme = Nord
+    line-numbers = true
+[interactive]
+    diffFilter = delta --color-only
 [alias]
     st = status
     co = checkout
@@ -24,11 +38,6 @@
     mg = merge
     mgs = merge -sS
     mgvs = merge --verify-signatures -sS
-[pager]
-    branch = false
-[pull]
-    rebase = true
-[commit]
-    gpgsign = true
-[gpg]
-    program = gpg2
+    cont = rebase --continue
+    ri = rebase -i
+    pf = push --force
