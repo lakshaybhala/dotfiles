@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Make sure tpm is installed
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+    git clone git@github.com:tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+fi
+
 # -k  --> new-window will not be created if already exists
 # -d  --> start session or window, but don't attach to it yet
 # -s  --> name the session
@@ -30,7 +35,11 @@ function session-main {
 }
 
 function session-work {
-    # tmux new-session -d -s work "fish -C 'z ditto'"
+    tmux new-session -d -s work
+    # tmux send-keys "z ditto" C-m
+    tmux new-window
+    # tmux send-keys "z ditto" C-m
+    tmux selectw -t work:0
 }
 
 #MAIN
