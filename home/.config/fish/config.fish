@@ -26,6 +26,9 @@ if [ (uname) = "Darwin" ]
 
     # GPG
     set -xg GPG_TTY (tty)
+
+    # Python
+    set -xg PATH /usr/local/opt/python/libexec/bin $PATH
 else if [ (uname) = "Linux" ]
     # Linux-specific config
 

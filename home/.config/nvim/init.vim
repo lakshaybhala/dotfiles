@@ -35,7 +35,7 @@ Plug 'airblade/vim-gitgutter'
 " Show the git blame for the current line
 Plug 'APZelos/blamer.nvim'
 " Additional color schemes
-Plug 'flazz/vim-colorschemes'
+Plug 'sonph/onehalf', {'rtp': 'vim/'}
 " Coloriser for color codes and things
 Plug 'norcalli/nvim-colorizer.lua'
 
@@ -105,7 +105,7 @@ call plug#end()
 set noshowmode
 " Set a colour scheme and add a custom filename pattern.
 let g:lightline = {
-    \   'colorscheme': 'deus',
+    \   'colorscheme': 'onehalfdark',
     \   'component_function': {
     \       'filename': 'LightlineFilename',
     \   },
@@ -118,9 +118,6 @@ endfunction
 " ------------
 " Don't map any keys by default
 let g:gitgutter_map_keys = 0
-" Increase the maximum number of signs displayed in a buffer. If nvim starts to get slow, lower this
-" closer to the default.
-let g:gitgutter_max_signs = 10000
 " Set all these signs to a bar so that just colour is used to distinguish
 let g:gitgutter_sign_added = '▏'
 let g:gitgutter_sign_modified = '▏'
@@ -145,11 +142,6 @@ let g:blamer_template = '<committer>, <committer-time> (<commit-short>) • <sum
 let g:blamer_date_format = '%Y-%m-%d'
 " Use relative date for recent dates
 let g:blamer_relative_time = 1
-
-" vim-colorschemes
-" ----------------
-" Set a color scheme
-colorscheme Tomorrow-Night-Eighties
 
 " nvim-colorizer.lua
 " ------------------
@@ -210,14 +202,7 @@ let g:coc_global_extensions = [
     \ "coc-yaml",
     \ ]
 " Shorten the update time of nvim to help with delays
-set updatetime=300
-" Customise some of the colours used in the Coc Pmenu
-hi CocFloating guibg=Black
-" Always show the signcolumn, and give it a transparent background
-set signcolumn=yes
-hi SignColumn guibg=none
-" Make hint text grey
-hi CocHintSign guifg=Grey
+set updatetime=100
 " Rename the symbol under the cursor with <leader>rn
 nmap <silent> gr <Plug>(coc-rename)
 " Jump to the definition with gd
@@ -235,6 +220,19 @@ function! s:show_documentation()
     call CocAction('doHover')
   endif
 endfunction
+augroup coc | au!
+    " Customise some of the colours used in the Coc Pmenu
+    au ColorScheme * hi! CocFloating guibg=#40464F
+    " Always show the signcolumn, and give it a transparent background
+    au ColorScheme * hi! SignColumn guibg=none
+    " Make hint text grey
+    au ColorScheme * hi! CocHintSign guifg=#6F6F6F
+    " Darken special (doc) comments a bit
+    au ColorScheme * hi! SpecialComment guifg=#BFBFBF
+    " Make comments italic
+    au ColorScheme * hi! Comment gui=italic
+    au ColorScheme * hi! SpecialComment gui=italic
+augroup END
 
 " vim-mucomplete
 " --------------
@@ -322,7 +320,6 @@ augroup END
 " JavaScript and Web Languages
 " ----------------------------
 augroup web | au!
-
     " Set an indentation level of 2 spaces for JavaScript and TypeScript files
     au BufRead,BufNewFile *.js,*.jsx,*.mjs,*.ts,*.tsx setlocal shiftwidth=2 softtabstop=2
     " Same for CSS-family files
@@ -360,6 +357,15 @@ augroup END
 " ===============
 " EDITOR SETTINGS
 " ===============
+
+" Appearance
+" ----------
+" Set a color scheme
+colorscheme onehalfdark
+" Display a background on the line with the cursor on it
+set cursorline
+" Always show the signcolumn
+set signcolumn=yes
 
 " Text Editing
 " ------------

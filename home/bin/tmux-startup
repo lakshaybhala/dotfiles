@@ -27,15 +27,16 @@ function except {
 SESSIONS="main work"
 
 function session-main {
-    # tmux new-session -d -s main "while true; asciiquarium; end"
-    # tmux split-window -h -t main:0.0 "while true; zenith --disable-history; end"
-    # tmux split-window -v -t main:0.0 "while true; gotop; end"
-    tmux selectp -t main:0.2
+    # tmux new-session -d -s main -x "$(tput cols)" -y "$(tput lines)" asciiquarium
+    tmux split-window -v -t main:0.0 -l 70% tiny
+    # tmux split-window -h -t main:0.0 -f "zenith --disable-history"
+    tmux selectp -t main:0.1
     tmux new-window
 }
 
 function session-work {
     tmux new-session -d -s work
+    tmux new-session -d -s work -x "$(tput cols)" -y "$(tput lines)"
     # tmux send-keys "z ditto" C-m
     tmux new-window
     # tmux send-keys "z ditto" C-m

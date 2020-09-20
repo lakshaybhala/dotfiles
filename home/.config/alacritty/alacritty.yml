@@ -61,7 +61,7 @@ scrolling:
 
   # Number of lines the viewport will move for every line scrolled when
   # scrollback is enabled (history > 0).
-  multiplier: 3
+  multiplier: 1
 
 # Font configuration (changes require restart)
 font:
@@ -69,7 +69,7 @@ font:
   normal:
     family: Iosevka Expanded Alternate
     # Style can be specified to pick a specific face.
-    style: Extralight
+    style: Light
 
   # The bold font face
   bold:
@@ -81,7 +81,7 @@ font:
   italic:
     family: Iosevka Expanded Alternate
     # Style can be specified to pick a specific face.
-    style: Extralight Italic
+    style: Light Italic
 
   # Point size of the font
   size: 13.0
@@ -100,55 +100,36 @@ font:
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
 
-# Colors (Afterglow)
+# Colors (One Dark)
 colors:
   # Default colors
   primary:
-    background: "0x2c2c2c"
-    foreground: "0xd6d6d6"
-
-    dim_foreground: "0xdbdbdb"
-    bright_foreground: "0xd9d9d9"
-    dim_background: "0x202020" # not sure
-    bright_background: "0x3a3a3a" # not sure
-
-  # Cursor colors
-  cursor:
-    text: "0x2c2c2c"
-    cursor: "0xd9d9d9"
+    background: "#282c34"
+    foreground: "#abb2bf"
 
   # Normal colors
   normal:
-    black: "0x1c1c1c"
-    red: "0xbc5653"
-    green: "0x909d63"
-    yellow: "0xebc17a"
-    blue: "0x7eaac7"
-    magenta: "0xaa6292"
-    cyan: "0x86d3ce"
-    white: "0xcacaca"
+    # NOTE: Use '#131613' for the `black` color if you'd like to see
+    # black text on the background.
+    black: "#282c34"
+    red: "#e06c75"
+    green: "#98c379"
+    yellow: "#d19a66"
+    blue: "#61afef"
+    magenta: "#c678dd"
+    cyan: "#56b6c2"
+    white: "#abb2bf"
 
   # Bright colors
   bright:
-    black: "0x636363"
-    red: "0xbc5653"
-    green: "0x909d63"
-    yellow: "0xebc17a"
-    blue: "0x7eaac7"
-    magenta: "0xaa6292"
-    cyan: "0x86d3ce"
-    white: "0xf7f7f7"
-
-  # Dim colors
-  dim:
-    black: "0x232323"
-    red: "0x74423f"
-    green: "0x5e6547"
-    yellow: "0x8b7653"
-    blue: "0x556b79"
-    magenta: "0x6e4962"
-    cyan: "0x5c8482"
-    white: "0x828282"
+    black: "#5c6370"
+    red: "#e06c75"
+    green: "#98c379"
+    yellow: "#d19a66"
+    blue: "#61afef"
+    magenta: "#c678dd"
+    cyan: "#56b6c2"
+    white: "#ffffff"
 
 # Visual Bell
 #
