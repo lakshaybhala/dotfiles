@@ -28,9 +28,11 @@ SESSIONS="main work"
 
 function session-main {
     # tmux new-session -d -s main -x "$(tput cols)" -y "$(tput lines)" asciiquarium
-    tmux split-window -v -t main:0.0 -l 70% tiny
     # tmux split-window -h -t main:0.0 -f "zenith --disable-history"
-    tmux selectp -t main:0.1
+    tmux rename-window "status"
+    tmux new-window
+    tmux send-keys "tiny" C-m
+    tmux rename-window "tiny"
     tmux new-window
 }
 

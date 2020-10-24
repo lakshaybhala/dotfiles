@@ -292,6 +292,13 @@ augroup rust | au!
     au Filetype rust setlocal textwidth=80
 augroup END
 
+" Go
+" --
+augroup go | au!
+    " Set the indentation to use tabs
+    au FileType go setlocal tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab
+augroup END
+
 " C++
 " ----
 augroup cpp | au!
@@ -352,6 +359,12 @@ augroup yaml | au!
 
     " Set the indentation width to 2 spaces for YAML
     au Filetype yaml setlocal shiftwidth=2 softtabstop=2
+augroup END
+
+" Gemini
+" ------
+augroup gemini | au!
+    au BufRead,BufNewFile *.gmi setlocal wrap linebreak textwidth=0 wrapmargin=0
 augroup END
 
 " ===============
