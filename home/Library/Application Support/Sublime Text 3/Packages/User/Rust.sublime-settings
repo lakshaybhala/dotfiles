@@ -1,0 +1,8 @@
+// These settings override both User and Default settings for the Rust syntax
+{
+    "auto_wrap_width": 80,
+    "rulers":
+    [
+        80
+    ]
+}
