@@ -16,11 +16,21 @@
 	],
 	"js_prettier":
 	{
+		"auto_format_on_save_excludes": [
+			"*/node_modules/*",
+			"*/reportWebVitals.js",
+			"*/serviceWorker.js",
+			"*/setupTests.js",
+			"*.json"
+		],
 		"auto_format_on_save": true,
 		"disable_prettier_cursor_offset": true,
 		"prettier_options":
 		{
-			"printWidth": 200
+			"printWidth": 100,
+			"singleQuote": true,
+			"trailingComma": "none",
+			"arrowParens": "avoid"
 		}
 	},
 	"rulers":
