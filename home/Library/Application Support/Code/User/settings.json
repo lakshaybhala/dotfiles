@@ -1,0 +1,70 @@
+{
+    "[css]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2,
+    },
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2,
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2,
+    },
+    "[plaintext]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+    },
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.codeActionsOnSave": [
+        "matklad.rust-analyzer",
+        "stkb.rewrap"
+    ],
+    "editor.fontFamily": "'Iosevka Expanded Alternate', Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontSize": 13,
+    "editor.fontWeight": "400",
+    "editor.formatOnSave": true,
+    "editor.rulers": [
+        100
+    ],
+    "editor.tabSize": 4,
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 100,
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "gitlens.currentLine.scrollable": false,
+    "javascript.suggest.paths": false,
+    "material-icon-theme.files.associations": {
+        "**.md": "markdown"
+    },
+    "path-intellisense.showHiddenFiles": true,
+    "prettier.arrowParens": "avoid",
+    "prettier.printWidth": 100,
+    "prettier.singleQuote": true,
+    "prettier.trailingComma": "none",
+    "rewrap.autoWrap.enabled": true,
+    "spellright.documentTypes": [
+        "jsonc",
+        "latex",
+        "markdown",
+        "plaintext"
+    ],
+    "spellright.groupDictionaries": false,
+    "spellright.language": [],
+    "telemetry.enableCrashReporter": false,
+    "telemetry.enableTelemetry": false,
+    "terminal.integrated.env.osx": {
+        "PATH": "/Users/LB/.cargo/bin:/usr/local/opt/python/libexec/bin:/usr/local/sbin:/Users/LB/.fzf/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/usr/local/MacGPG2/bin:/Library/TeX/texbin"
+    },
+    "terminal.integrated.inheritEnv": false,
+    "vim.disableExtension": true,
+    "vim.enableNeovim": true,
+    "vim.highlightedyank.enable": true,
+    "vim.leader": "<Space>",
+    "vim.neovimPath": "/usr/local/bin/nvim",
+    "window.newWindowDimensions": "maximized",
+    "window.zoomLevel": 0,
+    "workbench.colorTheme": "Atom One Light",
+    "workbench.editor.highlightModifiedTabs": true,
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.preferredDarkColorTheme": "Atom One Dark"
+}
