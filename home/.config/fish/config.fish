@@ -29,6 +29,12 @@ if [ (uname) = "Darwin" ]
 
     # Python
     set -xg PATH /usr/local/opt/python/libexec/bin $PATH
+
+    # MacTeX
+    set -xg PATH $PATH /Library/TeX/texbin
+
+    # Add /usr/local/share/man to MANPATH
+    set -xg MANPATH $MANPATH /usr/local/share/man
 else if [ (uname) = "Linux" ]
     # Linux-specific config
 
@@ -37,10 +43,6 @@ else if [ (uname) = "Linux" ]
     alias pbcopy "xclip -selection clipboard"
     alias pbpaste "xclip -selection clipboard -o"
 end
-
-# Rust
-# Path to Rust source
-set -xg RUST_SRC_PATH (eval $HOME/.cargo/bin/rustc --print sysroot)"/lib/rustlib/src/rust/src"
 
 # $PATH
 set -xg PATH \

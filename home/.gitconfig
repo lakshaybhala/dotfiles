@@ -1,10 +1,10 @@
 [user]
     name = Lakshay Bhala
     email = lakshaybhala@gmail.com
-    signingkey = 8C35DC1498F19C37FF928A8CF5F23D4DB7270DF8
+    signingKey = "8C35DC1498F19C37FF928A8CF5F23D4DB7270DF8"
 [core]
     editor = nvim
-    excludesfile = /Users/LB/.config/git/ignore
+    excludesFile = /Users/LB/.config/git/ignore
     pager = delta
 [gpg]
     program = gpg2
