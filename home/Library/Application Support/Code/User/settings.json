@@ -34,6 +34,7 @@
     "gitlens.currentLine.scrollable": false,
     "javascript.suggest.paths": false,
     "[latex]": {
+        "editor.tabSize": 2,
         "editor.formatOnSave": false,
         "editor.formatOnPaste": false,
         "editor.suggestSelection": "recentlyUsedByPrefix"

@@ -3,5 +3,6 @@
     "line_length": false,
     "no-trailing-spaces": false,
     "MD034": false
-  }
+  },
+  "rust-analyzer.cargo.allFeatures": true
 }

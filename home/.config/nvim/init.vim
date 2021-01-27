@@ -71,6 +71,7 @@ Plug 'cespare/vim-toml'
 Plug 'lervag/vimtex'
 Plug 'dag/vim-fish'
 Plug 'plasticboy/vim-markdown'
+Plug 'LnL7/vim-nix'
 " Other languages
 Plug 'pangloss/vim-javascript'
 Plug 'maxmellon/vim-jsx-pretty'
@@ -169,7 +170,7 @@ nmap <Leader>j <Plug>(easymotion-overwin-w)
 " vim-rooter
 " ----------
 " Set file and directory patterns for detection of project root
-let g:rooter_patterns = ['.git', '.git/']
+let g:rooter_patterns = ['.git', '.git/', 'Cargo.lock']
 
 " fzf.vim
 " -------
@@ -216,8 +217,10 @@ nnoremap <silent> K :call <SID>show_documentation()<CR>
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
     execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
   else
-    call CocAction('doHover')
+    execute '!' . &keywordprg . " " . expand('<cword>')
   endif
 endfunction
 augroup coc | au!
@@ -402,8 +405,10 @@ set fo+=q " Allow `gq` to format comments
 set fo+=w " Use a single trailing whitespace character to indicate continuing paragraphs
 set fo+=n " Format numbered lists as well
 set fo+=j " Auto-remove comment characters when joining lines
-" Let me type my own name
+" Shortcut for o with stroke
 inoremap <M-o> ø
+" Enable mouse usage (all modes) in terminals
+set mouse=a
 
 " Text Display
 " ------------
