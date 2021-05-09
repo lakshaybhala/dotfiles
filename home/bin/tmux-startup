@@ -2,7 +2,7 @@
 
 # Make sure tpm is installed
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
-    git clone git@github.com:tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+    git clone git@github.com:tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 fi
 
 # -k  --> new-window will not be created if already exists
@@ -11,7 +11,7 @@ fi
 # -t  --> specify a target location in the form session:window.pane
 
 function has-session {
-    tmux has-session -t $1 2>/dev/null
+    tmux has-session -t "$1" 2>/dev/null
 }
 
 function except {
@@ -22,9 +22,6 @@ function except {
         echo "tmux session $x already running"
     fi
 }
-
-# Configure your sessions here
-SESSIONS="main work"
 
 function session-main {
     # tmux new-session -d -s main -x "$(tput cols)" -y "$(tput lines)" asciiquarium
@@ -41,6 +38,34 @@ function session-work {
     # tmux send-keys "z company" C-m
     tmux selectw -t work:0
 }
+
+function session-stream {
+    tmux new-session -d -s stream -x "$(tput cols)" -y "$(tput lines)"
+
+    tmux split-window -t stream:0.0 -bh
+    tmux split-window -t stream:0.0 -v "tc connect nerosnm"
+    tmux resize-pane -t stream:0.0 -x 55 -y 24
+    tmux selectp -t stream:0.0
+    tmux send-keys C-l
+    tmux selectp -t stream:0.2
+
+    tmux new-window
+    tmux split-window -t stream:1.0 -bh
+    tmux split-window -t stream:1.0 -v "tc connect nerosnm"
+    tmux resize-pane -t stream:1.0 -x 55 -y 24
+    tmux selectp -t stream:1.0
+    tmux send-keys C-l
+    tmux selectp -t stream:1.2
+
+    tmux selectw -t stream:0
+}
+
+args=("$@")
+SESSIONS=(${args[*]})
+if [[ "$SESSIONS" == "" ]]; then
+    # Configure your sessions here
+    SESSIONS="main work"
+fi
 
 #MAIN
 for x in $SESSIONS

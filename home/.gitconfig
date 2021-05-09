@@ -20,24 +20,65 @@
 [interactive]
     diffFilter = delta --color-only
 [alias]
+    ; Status/info
     st = status
-    co = checkout
-    cob = checkout -b
-    ci = commit
-    cim = commit -m
-    cis = commit -sS
-    cism = commit -sS -m
-    last = log -1 HEAD
-    unstage = reset HEAD --
     hist = log --graph --pretty=format:'%C(magenta)%h%Creset - %G?%C(red)%d%Creset %s %C(dim green)(%cr) %C(cyan)<%an>%Creset' --abbrev-commit
     di = diff --color-moved
-    dic = diff --cached --color-moved
+    dic = diff --color-moved --cached
+    stl = stash list
+    last = log -1 HEAD
+
+    ; Changes
+    a = add
+    cof = checkout --
+    ap = add -p
+    unstage = reset HEAD --
+    rp = reset -p
+
+    ; Commit
+    ci = commit
+    cia = commit --amend
+    cim = commit -m
+
+    ; Push/pull
     p = push
-    psu = push --set-upstream
-    br = branch
-    mg = merge
-    mgs = merge -sS
-    mgvs = merge --verify-signatures -sS
-    cont = rebase --continue
+    pfwl = push --force-with-lease
+    pu = push -u
+    pl = git pull
+    fpa = fetch -p --all
+    cl = clone
+
+    ; Rebase
+    rb = rebase
+    rbo = rebase --onto
     ri = rebase -i
-    pf = push --force
+    cont = rebase --continue
+    abt = rebase --abort
+
+    ; Branch/checkout
+    co = checkout
+    brd = branch -d
+    cob = checkout -b
+    br = branch
+    brr = branch -r
+
+    ; Stash
+    sps = stash push
+    stp = stash drop
+    spi = stash push --keep-index
+    spo = stash pop
+    spa = stash apply
+
+    ; Bisect
+    bss = bisect start
+    bsr = bisect reset
+    bsg = bisect good
+    bsb = bisect bad
+    bsr = bisect run
+
+    ; Merge
+    mg = merge
+    msq = merge --squash
+    mso = merge --signoff
+    mgc = merge --continue
+    mga = merge --abort

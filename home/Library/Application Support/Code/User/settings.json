@@ -32,6 +32,21 @@
     "files.insertFinalNewline": true,
     "files.trimTrailingWhitespace": true,
     "gitlens.currentLine.scrollable": false,
+    "highlight.regexes": {
+        "(\\b\\S+\\b)(\\s+\\b\\1\\b)": {
+            "filterFileRegex": ".*\\.tex$",
+            "decorations": [
+                {
+                    "overviewRulerColor": "magenta",
+                    "textDecoration": "magenta wavy underline"
+                },
+                {
+                    "overviewRulerColor": "magenta",
+                    "textDecoration": "magenta wavy underline"
+                }
+            ]
+        }
+    },
     "javascript.suggest.paths": false,
     "[latex]": {
         "editor.tabSize": 2,
@@ -56,7 +71,9 @@
         "plaintext"
     ],
     "spellright.groupDictionaries": false,
-    "spellright.language": [],
+    "spellright.language": [
+        "en_GB"
+    ],
     "telemetry.enableCrashReporter": false,
     "telemetry.enableTelemetry": false,
     "terminal.integrated.env.osx": {
@@ -72,6 +89,12 @@
     "window.zoomLevel": 0,
     "workbench.colorTheme": "Atom One Light",
     "workbench.editor.highlightModifiedTabs": true,
+    "workbench.editorAssociations": [
+        {
+            "viewType": "jupyter.notebook.ipynb",
+            "filenamePattern": "*.ipynb"
+        }
+    ],
     "workbench.iconTheme": "material-icon-theme",
     "workbench.preferredDarkColorTheme": "Atom One Dark"
 }

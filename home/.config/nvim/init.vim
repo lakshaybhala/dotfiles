@@ -58,10 +58,17 @@ Plug 'junegunn/fzf.vim'
 
 " Semantic language support
 " -------------------------
-" Language server support
-Plug 'neoclide/coc.nvim', { 'branch': 'release' }
-" Completion support
-Plug 'lifepillar/vim-mucomplete'
+" Collection of common configurations for the Nvim LSP client
+Plug 'neovim/nvim-lspconfig'
+" Extensions to built-in LSP, for example, providing type inlay hints
+Plug 'nvim-lua/lsp_extensions.nvim'
+" Autocompletion framework for built-in LSP
+Plug 'nvim-lua/completion-nvim'
+" Improvements to the built-in LSP UI
+Plug 'RishabhRD/popfix'
+Plug 'RishabhRD/nvim-lsputils'
+" Statusline component for LSP information
+Plug 'nerosnm/lsp-status.nvim', { 'branch': 'nerosnm/always-add-space-3' }
 
 " Syntactic language support
 " --------------------------
@@ -70,23 +77,21 @@ Plug 'rust-lang/rust.vim'
 Plug 'cespare/vim-toml'
 Plug 'lervag/vimtex'
 Plug 'dag/vim-fish'
-Plug 'plasticboy/vim-markdown'
 Plug 'LnL7/vim-nix'
+Plug 'plasticboy/vim-markdown'
 " Other languages
+Plug 'keith/swift.vim'
 Plug 'pangloss/vim-javascript'
 Plug 'maxmellon/vim-jsx-pretty'
-Plug 'vmchale/ion-vim'
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-Plug 'uarun/vim-protobuf'
-Plug 'jparise/vim-graphql'
-Plug 'unisonweb/unison', { 'rtp': 'editor-support/vim' }
-Plug 'keith/swift.vim'
-Plug 'derekwyatt/vim-scala'
+Plug 'neovimhaskell/haskell-vim'
 Plug 'elmcast/elm-vim'
 Plug 'gleam-lang/gleam.vim'
+Plug 'tikhomirov/vim-glsl'
 " Extra tools
 Plug 'godlygeek/tabular'
 Plug 'rhysd/vim-clang-format'
+Plug 'google/vim-maktaba'
+Plug 'mhartington/formatter.nvim'
 
 " Utility
 " -------
@@ -106,13 +111,39 @@ call plug#end()
 set noshowmode
 " Set a colour scheme and add a custom filename pattern.
 let g:lightline = {
-    \   'colorscheme': 'onehalfdark',
-    \   'component_function': {
-    \       'filename': 'LightlineFilename',
-    \   },
+    \ 'colorscheme': 'onehalfdark',
+    \ 'active': {
+    \     'left': [
+    \         [ 'mode', 'paste' ],
+    \         [ 'readonly', 'filename' ],
+    \         [ 'lspstatus' ],
+    \         [ 'truncate' ],
+    \     ],
+    \     'right': [
+    \         [ 'lineinfo' ],
+    \         [ 'percent' ],
+    \         [ 'fileformat', 'fileencoding', 'filetype', 'charvaluehex' ],
+    \     ]
+    \ },
+    \ 'component': {
+    \     'truncate': '%<'
+    \ },
+    \ 'component_visible_condition': {
+    \     'truncate': 0,
+    \ },
+    \ 'component_type': {
+    \     'truncate': 'raw',
+    \ },
+    \ 'component_function': {
+    \     'filename': 'LightlineFilename',
+    \     'lspstatus': 'LspStatus',
+    \ },
 \ }
 function! LightlineFilename()
   return expand('%:t') !=# '' ? @% : '[No Name]'
+endfunction
+function! LspStatus() abort
+  return luaeval("require('lsp-status').status()")
 endfunction
 
 " vim-gitgutter
@@ -170,7 +201,7 @@ nmap <Leader>j <Plug>(easymotion-overwin-w)
 " vim-rooter
 " ----------
 " Set file and directory patterns for detection of project root
-let g:rooter_patterns = ['.git', '.git/', 'Cargo.lock']
+let g:rooter_patterns = ['.git', '.git/', 'Cargo.lock', 'package-lock.json']
 
 " fzf.vim
 " -------
@@ -189,78 +220,147 @@ command! -bang -nargs=* Rg
   \           : fzf#vim#with_preview('right:50%:hidden', '?'),
 \ <bang>0)
 
-" coc.nvim
-" --------
-" List of language server extensions to install if they aren't already
-let g:coc_global_extensions = [
-    \ "coc-clangd",
-    \ "coc-html",
-    \ "coc-json",
-    \ "coc-markdownlint",
-    \ "coc-omnisharp",
-    \ "coc-rust-analyzer",
-    \ "coc-sourcekit",
-    \ "coc-yaml",
-    \ ]
-" Shorten the update time of nvim to help with delays
+" nvim-lspconfig, nvim-lsputils, lsp-status.nvim
+" ----------------------------------------------
+" Set up language server(s)
+lua <<EOF
+local config = require'lspconfig'
+local completion = require'completion'
+local status = require'lsp-status'
+
+local on_attach = function(client)
+    completion.on_attach(client)
+    status.on_attach(client, bufnr)
+end
+
+config.rust_analyzer.setup({
+    on_attach = on_attach,
+    capabilities = status.capabilities,
+    settings = {
+        ["rust-analyzer"] = {
+            diagnostics = {
+                disabled = {
+                    "unresolved-proc-macro"
+                }
+            }
+        },
+    },
+    flags = {
+        debounce_did_change_notify = 50,
+    },
+})
+
+config.hls.setup({
+    on_attach = on_attach,
+    capabilities = status.capabilities,
+})
+
+config.tsserver.setup({
+    on_attach = on_attach,
+    capabilities = status.capabilities,
+})
+
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+    vim.lsp.diagnostic.on_publish_diagnostics, {
+        virtual_text = {
+            prefix = '⋈',
+        },
+        signs = true,
+        update_in_insert = false,
+    }
+)
+
+vim.lsp.handlers['textDocument/codeAction'] = require'lsputil.codeAction'.code_action_handler
+vim.lsp.handlers['textDocument/references'] = require'lsputil.locations'.references_handler
+vim.lsp.handlers['textDocument/definition'] = require'lsputil.locations'.definition_handler
+vim.lsp.handlers['textDocument/declaration'] = require'lsputil.locations'.declaration_handler
+vim.lsp.handlers['textDocument/typeDefinition'] = require'lsputil.locations'.typeDefinition_handler
+vim.lsp.handlers['textDocument/implementation'] = require'lsputil.locations'.implementation_handler
+vim.lsp.handlers['textDocument/documentSymbol'] = require'lsputil.symbols'.document_handler
+vim.lsp.handlers['workspace/symbol'] = require'lsputil.symbols'.workspace_handler
+
+status.register_progress()
+status.config({
+    status_symbol = 'λ',
+    current_function = false,
+    indicator_errors = '●',
+    indicator_warnings = '◉',
+    indicator_info = '◎',
+    indicator_hint = '○',
+    indicator_ok = '◌',
+    spinner_frames = { '◜', '◝', '◞', '◟' },
+    -- spinner_frames = { '○', '◔', '◑', '◕', '●' },
+})
+EOF
+
+" Code navigation shortcuts
+nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> gi    <cmd>lua vim.lsp.buf.implementation()<CR>
+nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
+nnoremap <silent> gD    <cmd>lua vim.lsp.buf.type_definition()<CR>
+nnoremap <silent> gu    <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
+nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
+nnoremap <silent> ga    <cmd>lua vim.lsp.buf.code_action()<CR>
+nnoremap <silent> gr    <cmd>lua vim.lsp.buf.rename()<CR>
+
+" Set updatetime for CursorHold
+" 100ms of no cursor movement to trigger CursorHold
 set updatetime=100
-" Rename the symbol under the cursor with <leader>rn
-nmap <silent> gr <Plug>(coc-rename)
-" Jump to the definition with gd
-nmap <silent> gd <Plug>(coc-definition)
-" Jump to implementations with gi
-nmap <silent> gi <Plug>(coc-implementation)
-" Jump to usages with gu
-nmap <silent> gu <Plug>(coc-references)
-" Show documentation in the preview window for the symbol under the cursor when pressing K
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  elseif (coc#rpc#ready())
-    call CocActionAsync('doHover')
-  else
-    execute '!' . &keywordprg . " " . expand('<cword>')
-  endif
-endfunction
-augroup coc | au!
-    " Customise some of the colours used in the Coc Pmenu
-    au ColorScheme * hi! CocFloating guibg=#40464F
-    " Always show the signcolumn, and give it a transparent background
-    au ColorScheme * hi! SignColumn guibg=none
-    " Make hint text grey
-    au ColorScheme * hi! CocHintSign guifg=#6F6F6F
-    " Darken special (doc) comments a bit
-    au ColorScheme * hi! SpecialComment guifg=#BFBFBF
-    " Make comments italic
-    au ColorScheme * hi! Comment gui=italic
-    au ColorScheme * hi! SpecialComment gui=italic
+" Show diagnostic popup on cursor hold
+autocmd CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics()
+
+" Goto previous/next diagnostic warning/error
+nnoremap <silent> g< <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
+nnoremap <silent> g> <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
+
+" Enable type inlay hints
+autocmd CursorMoved,InsertLeave,BufEnter,BufWinEnter,TabEnter,BufWritePost *
+\ lua require'lsp_extensions'.inlay_hints{ prefix = '▷ ', highlight = "InlayHint", enabled = { "TypeHint", "ChainingHint", "ParameterHint" } }
+
+augroup lspcolors | au!
+    " Customise some of the colours used for LSP things
+    au ColorScheme * hi! NormalFloat guibg=#3c4048
+    au ColorScheme * hi! LspDiagnosticsDefaultHint guifg=#5c6370
+    au ColorScheme * hi! LspDiagnosticsDefaultInformation guifg=#5c6370
+    au ColorScheme * hi! LspDiagnosticsDefaultWarning guifg=#e5c07b
+    au ColorScheme * hi! LspDiagnosticsDefaultError guifg=#e06c75
+    " Customise some of the symbols used
+    sign define LspDiagnosticsSignError text=●
+    sign define LspDiagnosticsSignWarning text=◉
+    sign define LspDiagnosticsSignInformation text=◎
+    sign define LspDiagnosticsSignHint text=○
+    " Add a highlight group for inlay hints
+    au ColorScheme * hi! InlayHint guifg=#848b98
 augroup END
 
-" vim-mucomplete
-" --------------
-" mucomplete says this option is required
-set completeopt=menu
-set completeopt+=menuone
-set completeopt+=noinsert
-" Turn off completion messages
+" completion-nvim
+" ---------------
+" Set completeopt to have a better completion experience
+" - menuone: popup even when there's only one match
+" - noinsert: Do not insert text until a selection is made
+" - noselect: Do not select, force user to select one from the menu
+set completeopt=menuone,noinsert,noselect
+" Turn off extra completion messages
 set shortmess+=c
-" Turn off auto-completion at startup
-let g:mucomplete#enable_auto_at_startup = 0
-" Set up completion chains
-let g:mucomplete#chains = {
-\   'default': ['tags', 'nsnp'],
-\   'rust': {
-\     'default': ['omni', 'nsnp'],
-\     'rustString.*': [],
-\     'rustComment.*': ['spel'],
-\   },
-\   'vim' : {
-\     'default': ['cmd', 'nsnp', 'keyn'],
-\     'vimComment.*': [],
-\     'vimString.*': ['spel']
-\   },
-\ }
+
+" Don't automatically pop up completion unless Tab has been pressed
+let g:completion_enable_auto_popup = 0
+
+" Use <Tab> and <S-Tab> to navigate through popup menu
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" use <Tab> as trigger keys
+imap <Tab> <Plug>(completion_smart_tab)
+imap <S-Tab> <Plug>(completion_smart_s_tab)
+
+" Set matching strategy for completions
+let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy', 'all']
+
+" Complete parentheses for functions
+let g:completion_enable_auto_paren = 1
 
 " rust.vim
 " --------
@@ -280,9 +380,44 @@ let g:vimtex_imaps_leader = ';'
 " Disable automatic folding of sections in Markdown files
 let g:vim_markdown_folding_disabled = 1
 
+" Disable markdown conceal feature
+let g:vim_markdown_conceal = 0
+
+" Disable TeX conceal feature
+let g:tex_conceal = ""
+let g:vim_markdown_math = 1
+
+" Turn on support for frontmatter in Markdown files
+let g:vim_markdown_frontmatter = 1 " YAML
+let g:vim_markdown_toml_frontmatter = 1
+let g:vim_markdown_json_frontmatter = 1
+
 " vim-clang-format
 " ----------------
 let g:clang_format#code_style = 'llvm'
+
+" formatter.nvim
+" --------------
+lua <<EOF
+require('formatter').setup({
+    logging = false,
+    filetype = {
+        haskell = {
+            function()
+                return {
+                    exe = "stylish-haskell",
+                    args = {},
+                    stdin = true
+                }
+            end
+        }
+    }
+})
+EOF
+
+augroup Formatter | au!
+    au BufWritePost *.hs :FormatWrite
+augroup END
 
 " =================
 " LANGUAGE SETTINGS
@@ -370,18 +505,40 @@ augroup gemini | au!
     au BufRead,BufNewFile *.gmi setlocal wrap linebreak textwidth=0 wrapmargin=0
 augroup END
 
+" Haskell
+" ----
+augroup hs | au!
+
+    " Set the indentation width to 2 spaces for Haskell
+    au Filetype haskell setlocal shiftwidth=2 softtabstop=2
+augroup END
+
 " ===============
 " EDITOR SETTINGS
 " ===============
 
 " Appearance
 " ----------
-" Set a color scheme
-colorscheme onehalfdark
+augroup appearance | au!
+    " Give the sign column a transparent background
+    au ColorScheme * hi! SignColumn guibg=none
+    " Darken special (doc) comments a bit
+    au ColorScheme * hi! SpecialComment guifg=#c0c7d4
+    " Make comments italic
+    au ColorScheme * hi! Comment gui=italic
+    au ColorScheme * hi! SpecialComment gui=italic
+    " Use undercurl for misspelled words
+    au ColorScheme * hi! SpellBad guisp=Red gui=undercurl
+    au ColorScheme * hi! SpellCap guisp=Yellow gui=undercurl
+    " au ColorScheme * hi! SpellRare guisp=Blue gui=undercurl
+    " au ColorScheme * hi! SpellLocal guisp=Orange gui=undercurl
+augroup END
 " Display a background on the line with the cursor on it
 set cursorline
 " Always show the signcolumn
 set signcolumn=yes
+" Set the color scheme
+colorscheme onehalfdark
 
 " Text Editing
 " ------------
@@ -409,6 +566,8 @@ set fo+=j " Auto-remove comment characters when joining lines
 inoremap <M-o> ø
 " Enable mouse usage (all modes) in terminals
 set mouse=a
+" Enable spell check
+" set spell spelllang=en_gb
 
 " Text Display
 " ------------
@@ -506,9 +665,10 @@ nnoremap <leader><leader> <c-^>
 
 " Open a new file adjacent to current file
 nnoremap <leader>e :e <C-R>=expand("%:p:h") . "/" <CR>
+nnoremap <leader>te :tabe <C-R>=expand("%:p:h") . "/" <CR>
 
 " Toggle search highlighting
-nmap <silent> <leader>/ :set hlsearch!<cr>
+nmap <silent> <leader>/ :noh<cr>
 
 " Create splits with <leader>s and a direction
 nmap <silent> <leader>sh :leftabove vnew<cr>

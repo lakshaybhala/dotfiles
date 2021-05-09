@@ -46,10 +46,10 @@ end
 
 # $PATH
 set -xg PATH \
-# Rust/Cargo
-$HOME/.cargo/bin \
-# Existing $PATH
-$PATH
+    # Rust/Cargo
+    $HOME/.cargo/bin \
+    # Existing $PATH
+    $PATH
 
 # Misc config
 # Make `less` clear its output on closing
@@ -68,13 +68,20 @@ end
 # Interactive things, with checks that they exist
 if status --is-interactive
     # Load starfish prompt
-    if command -v starship > /dev/null
+    if command -v starship >/dev/null
         starship init fish | source
     end
 
     # Load `fuck`
-    if command -v thefuck > /dev/null
+    if command -v thefuck >/dev/null
         thefuck --alias | source
+    end
+end
+
+# Configuration for things that are only relevant in interactive mode
+if status --is-interactive
+    if command -v fd >/dev/null
+        set -xg FZF_DEFAULT_COMMAND 'fd --type f --hidden --follow --exclude .git'
     end
 end
 
@@ -83,7 +90,8 @@ if status --is-interactive
     # Use exa instead of ls
     abbr -a -g ls exa
     abbr -a -g lsl exa -al
-    abbr -a -g lst exa -alT -I .git --git-ignore
+    abbr -a -g lst exa -alT -I '.git\|target'
+    abbr -a -g lsta exa -alT
     # Use bat instead of cat
     abbr -a -g cat bat
     # Use sd instead of sed
